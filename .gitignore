@@ -1,0 +1,4 @@
+*.o
+*.out
+tron
+.DS_Store
