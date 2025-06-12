@@ -6,53 +6,62 @@
 #include <locale.h>
 #include <vector>
 
-
-enum GameState {
-    PLAYING,
-    GAME_OVER,
-    PAUSED
+enum GameState
+{
+  PLAYING,
+  GAME_OVER,
+  PAUSED
 };
 
+class Game
+{
+private:
+  int width, height;
+  bool running;
+  GameState state; // Current game state
+  bool firstStart;
 
-class Game {
-  private:
-    int width, height;
-    bool running;
-    GameState state; // Current game state
-    bool firstStart;
+  std::chrono::steady_clock::time_point gameStartTime;
+  std::chrono::steady_clock::time_point currentTime;
+  int score;
 
-    std::chrono::steady_clock::time_point gameStartTime;
-    std::chrono::steady_clock::time_point currentTime;
-    int score;
+  static const int COLOR_PLAYER_HEAD = 1;
+  static const int COLOR_PLAYER_TRAIL = 2;
+  static const int COLOR_BORDERS = 3;
+  static const int COLOR_GAME_OVER = 4;
+  static const int COLOR_HUD = 5;
+  static const int COLOR_MESSAGES = 6;
 
-  public:
-    Game(int w, int h);
-    ~Game();
+  void initColors();
 
-    void init();
-    void run();
-    void update(Player &player);
-    void render(Player &player);
-    void handleInput(Player &player);
-    void cleanup();
+public:
+  Game(int w, int h);
+  ~Game();
 
-    bool checkWallCollision(int x, int y);
-    bool checkTrailCollision(int x, int y, const Player &player);
+  void init();
+  void run();
+  void update(Player &player);
+  void render(Player &player);
+  void handleInput(Player &player);
+  void cleanup();
 
-    void gameOver();
-    void restart();
-    void startGame();
+  bool checkWallCollision(int x, int y);
+  bool checkTrailCollision(int x, int y, const Player &player);
 
-    void showWelcomeMessage();
-    void renderHUD();
+  void gameOver();
+  void restart();
+  void startGame();
 
-    void drawBorders();
+  void showWelcomeMessage();
+  void renderHUD();
 
-    void updateScore();
-    int getScore() const;
-    int getGameTime() const;
+  void drawBorders();
 
-    bool isRunning() const { return running; }
-    void stop() { running = false; }
-    GameState getState() const { return state; }
+  void updateScore();
+  int getScore() const;
+  int getGameTime() const;
+
+  bool isRunning() const { return running; }
+  void stop() { running = false; }
+  GameState getState() const { return state; }
 };
