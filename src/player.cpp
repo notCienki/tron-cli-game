@@ -34,3 +34,19 @@ void Player::draw() {
         mvaddch(pos.second, pos.first, symbol); // Draw the player at each position in the trial
     }
 }
+
+int Player::getNextX() const {
+    switch (direction) {
+        case LEFT:  return x - 1;
+        case RIGHT: return x + 1;
+        default: return x;
+    }   
+}
+
+int Player::getNextY() const {
+    switch(direction) {
+        case UP:    return y - 1;
+        case DOWN:  return y + 1;
+        default: return y;
+    }
+}

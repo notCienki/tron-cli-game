@@ -23,6 +23,9 @@ class Player {
     void setDirection(Direction newDir);
     void draw();
 
+    int getNextX() const;
+    int getNextY() const;
+
     int getX() const { return x; }
     int getY() const { return y; }
     Direction getDirection() const { return direction; }

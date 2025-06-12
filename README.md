@@ -2,20 +2,12 @@
 
 A terminal-based Tron light cycle game built with C++ and ncurses.
 
-## 🎯 About
 
-This project was born out of pure boredom during university lectures 😄. Instead of scrolling through social media, I decided to build something fun while practicing my C++ skills!
+This project was born out of pure boredom during university lectures. Instead of scrolling through social media, I decided to build something fun while practicing my C++ skills.
 
 Classic Tron gameplay: control your light cycle, avoid crashing into walls and trails, make your opponents crash first.
 
-## 🚀 Features
-
-- Terminal-based gameplay with ASCII graphics
-- Real-time arrow key controls
-- Collision detection
-- Clean, modular C++ code structure
-
-## 🛠️ Quick Start
+## Quick Start
 
 **Prerequisites:**
 ```bash
@@ -34,12 +26,12 @@ make
 ./tron
 ```
 
-## 🎮 Controls
+## Controls
 
 - **Arrow Keys** - Move your light cycle
 - **Q/ESC** - Quit game
 
-## 📁 Structure
+## Structure
 
 ```
 tron-cli/
@@ -49,19 +41,13 @@ tron-cli/
 └── README.md
 ```
 
-## 🎯 Learning Goals
+## Learning Goals
 
 - Object-Oriented Programming in C++
 - Game loops and real-time input handling
 - Terminal programming with ncurses
 - Proper project organization
 
-## 🚧 Status
-
-- [x] Basic game structure & player movement
-- [ ] Collision detection
-- [ ] Multiplayer support
-- [ ] Score system
 
 ## 🤝 Contributing
 

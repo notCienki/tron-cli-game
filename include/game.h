@@ -4,10 +4,19 @@
 #include <ncurses.h>
 #include <vector>
 
+
+enum GameState {
+    PLAYING,
+    GAME_OVER,
+    PAUSED
+};
+
+
 class Game {
   private:
     int width, height;
     bool running;
+    GameState state; // Current game state
   public:
     Game(int w, int h);
     ~Game();
@@ -19,6 +28,11 @@ class Game {
     void handleInput(Player &player);
     void cleanup();
 
+    bool checkWallCollision(int x, int y);
+    void gameOver();
+    void restart();
+
     bool isRunning() const { return running; }
     void stop() { running = false; }
+    GameState getState() const { return state; }
 };

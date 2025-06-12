@@ -2,3 +2,6 @@
 *.out
 tron
 .DS_Store
+todolist.md
+tron.dSYM
+tron.dSYM/Contents/
