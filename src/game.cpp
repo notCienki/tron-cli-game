@@ -80,6 +80,11 @@ void Game::update(Player &player) {
         return;
     }
 
+    if (checkTrailCollision(nextX, nextY, player)) {
+        gameOver(); // If the player collides with its own trail
+        return;
+    }
+
     player.move(); // Move the player based on current direction
 }
 
@@ -117,4 +122,16 @@ void Game::gameOver() {
 
 void Game::restart(){
     state = PLAYING; // Reset the game state to PLAYING
+}
+
+bool Game::checkTrailCollision(int x, int y, const Player &player) {
+    const auto& trial = player.getTrial();
+
+    for(const auto& pos : trial) {
+        if (pos.first == x && pos.second == y) {
+            return true; // Collision with own trail
+        }
+    }
+
+    return false; // No collision
 }

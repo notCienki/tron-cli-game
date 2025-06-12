@@ -29,6 +29,7 @@ class Game {
     void cleanup();
 
     bool checkWallCollision(int x, int y);
+    bool checkTrailCollision(int x, int y, const Player &player);
     void gameOver();
     void restart();
 
