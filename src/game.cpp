@@ -3,7 +3,7 @@
 #include <unistd.h> // for usleep
 #include <cstdio>
 
-Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING) {}
+Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), firstStart(true), score(0) {}
 
 Game::~Game() {
     cleanup();
@@ -30,6 +30,27 @@ void Game::startGame(){
     gameStartTime = std::chrono::steady_clock::now();
     score = 0;
     state = PLAYING;
+
+    if(firstStart){
+        showWelcomeMessage();
+        firstStart = false;
+    }
+}
+
+void Game::showWelcomeMessage() {
+    clear();
+    border('|', '|', '-', '-', '+', '+', '+', '+');
+    
+    int centerX = width / 2;
+    int centerY = height / 2;
+    
+    mvprintw(centerY - 2, centerX - 8, " TRON GAME ");
+    mvprintw(centerY, centerX - 12, "Use arrow keys to move");
+    mvprintw(centerY + 1, centerX - 10, "Avoid walls and trails");
+    mvprintw(centerY + 3, centerX - 8, "Starting...");
+    
+    refresh();
+    sleep(2);
 }
 
 void Game::updateScore() {
@@ -124,10 +145,15 @@ void Game::update(Player &player) {
 void Game::render(Player &player) {
     clear();
     border('|', '|', '-', '-', '+', '+', '+', '+');
-    
-    // Wyświetl score w górnym lewym rogu
+
+    // TOP HUD
     mvprintw(0, 2, " Score: %d | Time: %ds ", score, getGameTime());
-    
+    // BOTTOM HUD
+    int bottomY = height - 1;
+    mvprintw(bottomY, 2, " Controls: ArrowKeys Move | Q Quit | R Restart ");
+
+
+    // GAME CONTENT
     if (state == GAME_OVER) {
         int centerX = width / 2;
         int centerY = height / 2;

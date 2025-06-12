@@ -18,6 +18,7 @@ class Game {
     int width, height;
     bool running;
     GameState state; // Current game state
+    bool firstStart;
 
     std::chrono::steady_clock::time_point gameStartTime;
     std::chrono::steady_clock::time_point currentTime;
@@ -40,6 +41,9 @@ class Game {
     void gameOver();
     void restart();
     void startGame();
+
+    void showWelcomeMessage();
+    void renderHUD();
 
     void updateScore();
     void getScore() const;
