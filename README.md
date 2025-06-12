@@ -1,7 +1,6 @@
 # 🏍️ Tron CLI Game
 
 A terminal-based Tron light cycle game built with C++ and ncurses.
-sex
 
 This project was born out of pure boredom during university lectures. Instead of scrolling through social media, I decided to build something fun while practicing my C++ skills.
 
