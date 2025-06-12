@@ -5,13 +5,7 @@
 #include <chrono>
 #include <locale.h>
 #include <vector>
-
-enum GameState
-{
-  PLAYING,
-  GAME_OVER,
-  PAUSED
-};
+#include "types.h"
 
 class Game
 {
