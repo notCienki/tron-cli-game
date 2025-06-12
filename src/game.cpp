@@ -1,6 +1,7 @@
 #include "../include/game.h"
 #include "../include/player.h"
 #include <unistd.h> // for usleep
+#include <cstdio>
 
 Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING) {}
 
@@ -9,16 +10,46 @@ Game::~Game() {
 }
 
 void Game::init() {
-    initscr(); // Initialize ncurses
-    noecho(); // Don't echo input characters
-    curs_set(0); // Hide the cursor
-    keypad(stdscr, TRUE); // Enable special keys (like arrow keys)
-    nodelay(stdscr, TRUE); // Don't block on input
+    printf("\033[?1049h\033[H");
+    fflush(stdout);
+    
+    initscr();
+    noecho();
+    curs_set(0);
+    keypad(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
+    raw();
+    scrollok(stdscr, FALSE);
+    
+    getmaxyx(stdscr, height, width);
+    running = true;
+    startGame();
+}
 
-    getmaxyx(stdscr, height, width); // Get terminal size
+void Game::startGame(){
+    gameStartTime = std::chrono::steady_clock::now();
+    score = 0;
+    state = PLAYING;
+}
 
-    border('|', '|', '-', '-', '+', '+', '+', '+'); // Draw a border
-    running = true; // Set the game to running state
+void Game::updateScore() {
+    if(state == PLAYING) {
+        currentTime = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(currentTime - gameStartTime);
+        score = duration.count();
+    }
+}
+
+int Game::getGameTime() const {
+    if(state == PLAYING) {
+        auto now = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - gameStartTime);
+        return static_cast<int>(duration.count());
+    }
+    else{
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(currentTime - gameStartTime);
+        return static_cast<int>(duration.count());
+    }
 }
 
 void Game::run() {
@@ -70,7 +101,9 @@ void Game::handleInput(Player &player) {
 }
 
 void Game::update(Player &player) {
-    if (state != PLAYING) return; // Only update if the game is in PLAYING state
+    if (state != PLAYING) return;
+
+    updateScore();
 
     int nextX = player.getNextX();
     int nextY = player.getNextY();
@@ -81,34 +114,41 @@ void Game::update(Player &player) {
     }
 
     if (checkTrailCollision(nextX, nextY, player)) {
-        gameOver(); // If the player collides with its own trail
+        gameOver();
         return;
     }
 
-    player.move(); // Move the player based on current direction
+    player.move();
 }
 
 void Game::render(Player &player) {
-  clear();
-  border('|', '|', '-', '-', '+', '+', '+', '+');
-  
-  if (state == GAME_OVER) {
-    int centerX = width / 2;
-    int centerY = height / 2;
-
-    mvprintw(centerY - 1, centerX - 5, "GAME OVER!");
-    mvprintw(centerY + 1, centerX - 8, "Press R to restart");
-    mvprintw(centerY + 2, centerX - 7, "Press Q to quit");
-  }
-  else {
-    player.draw();
-  }
-
-  refresh(); // Refresh the screen to show changes
+    clear();
+    border('|', '|', '-', '-', '+', '+', '+', '+');
+    
+    // Wyświetl score w górnym lewym rogu
+    mvprintw(0, 2, " Score: %d | Time: %ds ", score, getGameTime());
+    
+    if (state == GAME_OVER) {
+        int centerX = width / 2;
+        int centerY = height / 2;
+        
+        mvprintw(centerY - 2, centerX - 6, "GAME OVER!");
+        mvprintw(centerY - 1, centerX - 8, "Final Score: %d", score);
+        mvprintw(centerY, centerX - 8, "Survival Time: %ds", getGameTime());
+        mvprintw(centerY + 2, centerX - 8, "Press R to restart");
+        mvprintw(centerY + 3, centerX - 7, "Press Q to quit");
+    } else {
+        player.draw();
+    }
+    
+    refresh();
 }
 
 void Game::cleanup() {
-    endwin(); // End ncurses mode
+    endwin();
+
+    printf("\033[?1049l");
+    fflush(stdout);
 }
 
 bool Game::checkWallCollision(int x, int y) {
@@ -117,11 +157,11 @@ bool Game::checkWallCollision(int x, int y) {
 }
 
 void Game::gameOver() {
-    state = GAME_OVER; // Set the game state to GAME_OVER
+    state = GAME_OVER;
 }
 
 void Game::restart(){
-    state = PLAYING; // Reset the game state to PLAYING
+    startGame();
 }
 
 bool Game::checkTrailCollision(int x, int y, const Player &player) {
@@ -129,9 +169,9 @@ bool Game::checkTrailCollision(int x, int y, const Player &player) {
 
     for(const auto& pos : trial) {
         if (pos.first == x && pos.second == y) {
-            return true; // Collision with own trail
+            return true;
         }
     }
 
-    return false; // No collision
+    return false;
 }

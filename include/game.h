@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include <ncurses.h>
+#include <chrono>
 #include <vector>
 
 
@@ -17,6 +18,11 @@ class Game {
     int width, height;
     bool running;
     GameState state; // Current game state
+
+    std::chrono::steady_clock::time_point gameStartTime;
+    std::chrono::steady_clock::time_point currentTime;
+    int score;
+
   public:
     Game(int w, int h);
     ~Game();
@@ -30,8 +36,14 @@ class Game {
 
     bool checkWallCollision(int x, int y);
     bool checkTrailCollision(int x, int y, const Player &player);
+
     void gameOver();
     void restart();
+    void startGame();
+
+    void updateScore();
+    void getScore() const;
+    int getGameTime() const;
 
     bool isRunning() const { return running; }
     void stop() { running = false; }
