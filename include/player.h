@@ -13,6 +13,7 @@ enum Direction {
 class Player {
   private:
     int x, y; // Player's position
+    int startX, startY; // Starting position
     Direction direction; // Current direction of movement
     std::vector<std::pair<int, int>> trial;
     char symbol; // Character representing the player
@@ -22,6 +23,7 @@ class Player {
     void move();
     void setDirection(Direction newDir);
     void draw();
+    void reset();
 
     int getNextX() const;
     int getNextY() const;

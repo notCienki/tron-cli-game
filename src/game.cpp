@@ -15,15 +15,24 @@ void Game::init() {
     keypad(stdscr, TRUE); // Enable special keys (like arrow keys)
     nodelay(stdscr, TRUE); // Don't block on input
 
+    getmaxyx(stdscr, height, width); // Get terminal size
+
     border('|', '|', '-', '-', '+', '+', '+', '+'); // Draw a border
     running = true; // Set the game to running state
 }
 
 void Game::run() {
-  Player player (width / 2, height / 2, '*'); // Create a player at the center of the screen
+    Player player (width / 2, height / 2, '*'); // Create a player at the center of the screen
 
     while (running) {
         handleInput(player);
+
+        if(state == PLAYING && player.getTrial().empty()) {
+            // If the game is in PLAYING state and player has moved
+            player.reset(); // Reset player position if needed
+        }
+
+
         update(player);
         render(player);
         usleep(100000); // Sleep for 100 milliseconds to control the game speed
@@ -47,7 +56,10 @@ void Game::handleInput(Player &player) {
             break;
       case 'r':
       case 'R':
-        if (state == GAME_OVER) restart();
+        if (state == GAME_OVER){ 
+            restart();
+            player.reset(); // Reset player position and direction
+        }
         break;
       case 'q':
       case 'Q':
@@ -79,12 +91,14 @@ void Game::render(Player &player) {
     int centerX = width / 2;
     int centerY = height / 2;
 
-    mvprintw(centerY, centerX - 5, "GAME OVER");
+    mvprintw(centerY - 1, centerX - 5, "GAME OVER!");
     mvprintw(centerY + 1, centerX - 8, "Press R to restart");
-
+    mvprintw(centerY + 2, centerX - 7, "Press Q to quit");
+  }
+  else {
+    player.draw();
   }
 
-  player.draw(); // Draw the player on the screen
   refresh(); // Refresh the screen to show changes
 }
 

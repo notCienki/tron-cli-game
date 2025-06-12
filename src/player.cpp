@@ -2,7 +2,7 @@
 #include <ncurses.h>
 
 Player::Player(int startX, int startY, char sym) 
-    : x(startX), y(startY), direction(RIGHT), symbol(sym) {
+    : x(startX), y(startY), startX(startX), startY(startY), direction(RIGHT), symbol(sym) {
     trial.push_back({x, y}); // Add starting position to the trial
 }
 
@@ -49,4 +49,12 @@ int Player::getNextY() const {
         case DOWN:  return y + 1;
         default: return y;
     }
+}
+
+void Player::reset() {
+    x = startX; // Reset to starting position
+    y = startY;
+    direction = RIGHT; // Reset direction to default
+    trial.clear(); // Clear the trial history
+    trial.push_back({x, y}); // Add starting position back to the trial
 }
