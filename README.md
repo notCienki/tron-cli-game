@@ -9,27 +9,46 @@ Classic Tron gameplay: control your light cycle, avoid crashing into walls and t
 
 ## Quick Start
 
-**Prerequisites:**
+### Prerequisites
+
+**macOS:**
 ```bash
-# macOS
+# Install ncurses via Homebrew
 brew install ncurses
 
-# Linux
-sudo apt-get install libncurses5-dev
+# Ensure UTF-8 support (for fancy borders)
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 ```
 
-**Build & Run:**
+**Linux (Ubuntu/Debian):**
 ```bash
-git clone https://github.com/yourusername/tron-cli.git
+# Install ncurses development package
+sudo apt-get install libncurses5-dev
+
+# Install UTF-8 locales
+sudo apt-get install locales
+sudo locale-gen en_US.UTF-8
+```
+
+**Linux (Arch/Manjaro):**
+```bash
+sudo pacman -S ncurses
+```
+
+### Build & Run
+
+```bash
+git clone https://github.com/notCienki/tron-cli-game
 cd tron-cli
-make
+g++ -std=c++17 -Wall -g -o tron src/main.cpp src/game.cpp src/player.cpp -lncurses
 ./tron
 ```
-
 ## Controls
 
-- **Arrow Keys** - Move your light cycle
-- **Q/ESC** - Quit game
+- **↑↓←→** - Move your light cycle
+- **Q/ESC** - Quit game  
+- **R** - Restart after game over
 
 ## Structure
 
@@ -37,8 +56,26 @@ make
 tron-cli/
 ├── include/     # Headers (game.h, player.h)
 ├── src/         # Source files
-├── Makefile     # Build config
+├── Makefile (not implemented yet)     # Build config
 └── README.md
+```
+
+## Troubleshooting
+
+**Weird characters instead of borders?**
+```bash
+# Set UTF-8 locale
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+# Or add to your shell profile (~/.zshrc, ~/.bashrc)
+echo 'export LC_ALL=en_US.UTF-8' >> ~/.zshrc
+```
+
+**Compilation errors on macOS?**
+```bash
+# Use Homebrew ncurses paths
+g++ -std=c++17 -I$(brew --prefix ncurses)/include -L$(brew --prefix ncurses)/lib -o tron src/*.cpp -lncurses
 ```
 
 ## Learning Goals

@@ -10,6 +10,8 @@ Game::~Game() {
 }
 
 void Game::init() {
+    setlocale(LC_ALL, "");
+    
     printf("\033[?1049h\033[H");
     fflush(stdout);
     
@@ -39,15 +41,17 @@ void Game::startGame(){
 
 void Game::showWelcomeMessage() {
     clear();
-    border('|', '|', '-', '-', '+', '+', '+', '+');
+    drawBorders();
     
     int centerX = width / 2;
     int centerY = height / 2;
     
-    mvprintw(centerY - 2, centerX - 8, " TRON GAME ");
-    mvprintw(centerY, centerX - 12, "Use arrow keys to move");
-    mvprintw(centerY + 1, centerX - 10, "Avoid walls and trails");
-    mvprintw(centerY + 3, centerX - 8, "Starting...");
+    mvprintw(centerY - 3, centerX - 12, "╔══════════════════════╗");
+    mvprintw(centerY - 2, centerX - 12, "║      TRON GAME       ║");
+    mvprintw(centerY - 1, centerX - 12, "╠══════════════════════╣");
+    mvprintw(centerY,     centerX - 12, "║   Use ⇠⇡⇢⇣ to move   ║");
+    mvprintw(centerY + 1, centerX - 12, "║ Avoid walls & trails ║");
+    mvprintw(centerY + 2, centerX - 12, "╚══════════════════════╝");
     
     refresh();
     sleep(2);
@@ -144,13 +148,14 @@ void Game::update(Player &player) {
 
 void Game::render(Player &player) {
     clear();
-    border('|', '|', '-', '-', '+', '+', '+', '+');
+
+    drawBorders(); // Draw the game borders
 
     // TOP HUD
-    mvprintw(0, 2, " Score: %d | Time: %ds ", score, getGameTime());
+    mvprintw(0, 3, "╣ Score: %d ║ Time: %ds ╠", score, getGameTime());
     // BOTTOM HUD
     int bottomY = height - 1;
-    mvprintw(bottomY, 2, " Controls: ArrowKeys Move | Q Quit | R Restart ");
+    mvprintw(bottomY, 3, "╣ ⇠⇡⇢⇣ Move ║ Q Quit ║ R Restart ╠");
 
 
     // GAME CONTENT
@@ -200,4 +205,25 @@ bool Game::checkTrailCollision(int x, int y, const Player &player) {
     }
 
     return false;
+}
+
+void Game::drawBorders() {
+    mvprintw(0, 0, "╔");
+    for (int x = 1; x < width - 1; x++) {
+        mvprintw(0, x, "═");
+    }
+    mvprintw(0, width - 1, "╗");
+    
+    // Side borders
+    for (int y = 1; y < height - 1; y++) {
+        mvprintw(y, 0, "║");
+        mvprintw(y, width - 1, "║");
+    }
+    
+    // Bottom border
+    mvprintw(height - 1, 0, "╚");
+    for (int x = 1; x < width - 1; x++) {
+        mvprintw(height - 1, x, "═");
+    }
+    mvprintw(height - 1, width - 1, "╝");
 }

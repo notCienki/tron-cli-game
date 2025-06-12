@@ -45,6 +45,8 @@ class Game {
     void showWelcomeMessage();
     void renderHUD();
 
+    void drawBorders();
+
     void updateScore();
     void getScore() const;
     int getGameTime() const;
