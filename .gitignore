@@ -3,5 +3,6 @@
 tron
 .DS_Store
 todolist.md
-tron.dSYM
+tron.dSYM/
 tron.dSYM/Contents/
+.vscode/

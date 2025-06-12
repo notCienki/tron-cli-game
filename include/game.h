@@ -3,6 +3,7 @@
 #include "player.h"
 #include <ncurses.h>
 #include <chrono>
+#include <locale.h>
 #include <vector>
 
 
@@ -48,7 +49,7 @@ class Game {
     void drawBorders();
 
     void updateScore();
-    void getScore() const;
+    int getScore() const;
     int getGameTime() const;
 
     bool isRunning() const { return running; }

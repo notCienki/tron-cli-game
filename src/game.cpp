@@ -23,7 +23,10 @@ void Game::init() {
     raw();
     scrollok(stdscr, FALSE);
     
-    getmaxyx(stdscr, height, width);
+    int termHeight, termWidth;
+    getmaxyx(stdscr, termHeight, termWidth);
+    height = termHeight;
+    width = termWidth;
     running = true;
     startGame();
 }
@@ -78,15 +81,17 @@ int Game::getGameTime() const {
 }
 
 void Game::run() {
-    Player player (width / 2, height / 2, '*'); // Create a player at the center of the screen
+    int actualWidth, actualHeight;
+    getmaxyx(stdscr, actualHeight, actualWidth);
+    Player player (actualWidth / 2, actualHeight / 2);
 
     while (running) {
         handleInput(player);
 
-        if(state == PLAYING && player.getTrial().empty()) {
+        /*if(state == PLAYING && player.getTrail().empty()) {
             // If the game is in PLAYING state and player has moved
             player.reset(); // Reset player position if needed
-        }
+        }*/
 
 
         update(player);
@@ -196,14 +201,19 @@ void Game::restart(){
 }
 
 bool Game::checkTrailCollision(int x, int y, const Player &player) {
-    const auto& trial = player.getTrial();
+    const auto& trail = player.getTrail();  // Zmień getTrial na getTrail!
+    
+    if(trail.size() <= 2){
+        return false;
+    }
 
-    for(const auto& pos : trial) {
-        if (pos.first == x && pos.second == y) {
+    // TrailSegment ma .x i .y, nie .first i .second!
+    for (size_t i = 0; i < trail.size() - 2; i++) {
+        if (trail[i].x == x && trail[i].y == y) {  // .x i .y zamiast .first i .second
             return true;
         }
     }
-
+    
     return false;
 }
 
@@ -227,3 +237,8 @@ void Game::drawBorders() {
     }
     mvprintw(height - 1, width - 1, "╝");
 }
+
+int Game::getScore() const {
+    return score;
+}
+
