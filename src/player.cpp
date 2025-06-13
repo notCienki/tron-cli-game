@@ -169,17 +169,17 @@ void Player::draw()
         const auto &segment = trail[i];
         if (segment.isHead)
         {
-            attron(COLOR_PAIR(1)); // CYAN dla głowy
+            attron(COLOR_PAIR(COLOR_PLAYER_HEAD)); // CYAN dla głowy
         }
         else
         {
-            attron(COLOR_PAIR(2)); // GREEN dla śladu
+            attron(COLOR_PAIR(COLOR_PLAYER_TRAIL)); // GREEN dla śladu
         }
         if (segment.y >= 0 && segment.y < maxY &&
             segment.x >= 0 && segment.x < maxX)
         {
             mvprintw(segment.y, segment.x, "%s", segment.getUnicodeChar());
-            attroff(COLOR_PAIR(segment.isHead ? 1 : 2));
+            attroff(COLOR_PAIR(segment.isHead ? COLOR_PLAYER_HEAD : COLOR_PLAYER_TRAIL));
         }
     }
 }

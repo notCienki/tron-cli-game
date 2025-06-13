@@ -36,6 +36,7 @@ int main(int argc, char **argv)
                 // Start the game
                 Game game(80, 24);
                 game.init();
+                game.setGameSpeed(menu.getGameSpeed());
                 game.run();
                 // When game ends, return to menu
                 menu.setState(MAIN_MENU);

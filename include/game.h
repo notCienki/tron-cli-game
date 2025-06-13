@@ -13,6 +13,7 @@ private:
   int width, height;
   bool running;
   GameState state; // Current game state
+  GameSpeed currentGameSpeed;
   bool firstStart;
 
   std::chrono::steady_clock::time_point gameStartTime;
@@ -54,6 +55,7 @@ public:
   void updateScore();
   int getScore() const;
   int getGameTime() const;
+  void setGameSpeed(GameSpeed speed);
 
   bool isRunning() const { return running; }
   void stop() { running = false; }

@@ -3,7 +3,7 @@
 #include <unistd.h> // for usleep
 #include <cstdio>
 
-Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), firstStart(true), score(0) {}
+Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), firstStart(true), score(0) {}
 
 Game::~Game()
 {
@@ -109,7 +109,7 @@ void Game::run()
 
         update(player);
         render(player);
-        usleep(100000); // Sleep for 100 milliseconds to control the game speed
+        usleep(currentGameSpeed); // Sleep for 100 milliseconds to control the game speed
     }
 }
 
@@ -241,7 +241,7 @@ void Game::restart()
 
 bool Game::checkTrailCollision(int x, int y, const Player &player)
 {
-    const auto &trail = player.getTrail(); // Zmień getTrial na getTrail!
+    const auto &trail = player.getTrail();
 
     if (trail.size() <= 2)
     {
@@ -286,7 +286,7 @@ void Game::drawBorders()
     }
     mvprintw(height - 1, width - 1, "╝");
 
-    attroff(COLOR_BORDERS);
+    attroff(COLOR_PAIR(COLOR_BORDERS));
 }
 
 int Game::getScore() const
@@ -308,4 +308,9 @@ void Game::initColors()
         init_pair(COLOR_HUD, COLOR_YELLOW, -1);         // zamiast COLOR_BLACK
         init_pair(COLOR_MESSAGES, COLOR_MAGENTA, -1);   // zamiast COLOR_BLACK
     }
+}
+
+void Game::setGameSpeed(GameSpeed speed)
+{
+    currentGameSpeed = speed;
 }

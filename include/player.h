@@ -26,6 +26,10 @@ private:
   Direction lastDirection;
   std::vector<TrailSegment> trail;
 
+  // Color constants for drawing
+  static const int COLOR_PLAYER_HEAD = 1;
+  static const int COLOR_PLAYER_TRAIL = 2;
+
 public:
   Player(int startX, int startY);
 
