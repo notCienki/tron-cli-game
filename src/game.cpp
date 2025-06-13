@@ -3,7 +3,7 @@
 #include <unistd.h> // for usleep
 #include <cstdio>
 
-Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), firstStart(true), score(0) {}
+Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentColorScheme(0), firstStart(true), score(0) {}
 
 Game::~Game()
 {
@@ -301,16 +301,43 @@ void Game::initColors()
         start_color();
         use_default_colors(); // DODAJ TĘ LINIĘ!
 
-        init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);   // zamiast COLOR_BLACK
-        init_pair(COLOR_PLAYER_TRAIL, COLOR_GREEN, -1); // zamiast COLOR_BLACK
-        init_pair(COLOR_BORDERS, COLOR_WHITE, -1);      // zamiast COLOR_BLACK
-        init_pair(COLOR_GAME_OVER, COLOR_RED, -1);      // zamiast COLOR_BLACK
-        init_pair(COLOR_HUD, COLOR_YELLOW, -1);         // zamiast COLOR_BLACK
-        init_pair(COLOR_MESSAGES, COLOR_MAGENTA, -1);   // zamiast COLOR_BLACK
+        // 3 schematy kolorów
+        switch (currentColorScheme)
+        {
+        case 0:                                            // CLASSIC
+            init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);  // Jasny cyan głowa
+            init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1); // Niebieski ślad
+            init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
+            break;
+        case 1:                                              // NEON
+            init_pair(COLOR_PLAYER_HEAD, COLOR_MAGENTA, -1); // Różowa głowa
+            init_pair(COLOR_PLAYER_TRAIL, COLOR_YELLOW, -1); // Żółty ślad
+            init_pair(COLOR_BORDERS, COLOR_RED, -1);
+            break;
+        case 2:                                             // RETRO
+            init_pair(COLOR_PLAYER_HEAD, COLOR_GREEN, -1);  // Zielona głowa
+            init_pair(COLOR_PLAYER_TRAIL, COLOR_WHITE, -1); // Biały ślad
+            init_pair(COLOR_BORDERS, COLOR_GREEN, -1);
+            break;
+        default:                                           // Fallback to CLASSIC
+            init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);  // Jasny cyan głowa
+            init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1); // Niebieski ślad
+            init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
+            break;
+        }
+        init_pair(COLOR_GAME_OVER, COLOR_RED, -1);    // zamiast COLOR_BLACK
+        init_pair(COLOR_HUD, COLOR_YELLOW, -1);       // zamiast COLOR_BLACK
+        init_pair(COLOR_MESSAGES, COLOR_MAGENTA, -1); // zamiast COLOR_BLACK
     }
 }
 
 void Game::setGameSpeed(GameSpeed speed)
 {
     currentGameSpeed = speed;
+}
+
+void Game::setColorScheme(int scheme)
+{
+    currentColorScheme = scheme;
+    initColors();
 }
