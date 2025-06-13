@@ -29,6 +29,7 @@ private:
   static const int COLOR_MESSAGES = 6;
 
   void initColors();
+  std::pair<int, int> getRandomSpawnPosition(int widht, int height);
 
 public:
   Game(int w, int h);
@@ -45,7 +46,7 @@ public:
   bool checkTrailCollision(int x, int y, const Player &player);
 
   void gameOver();
-  void restart();
+  void restart(Player &player);
   void startGame();
 
   void showWelcomeMessage();

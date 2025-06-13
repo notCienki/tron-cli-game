@@ -36,7 +36,7 @@ public:
   void move();
   void setDirection(Direction newDir);
   void draw();
-  void reset();
+  void reset(int newX = -1, int newY = -1);
 
   char getPlayerChar() const;
   const char *getPlayerUnicodeChar() const;

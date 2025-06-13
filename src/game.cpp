@@ -2,6 +2,8 @@
 #include "../include/player.h"
 #include <unistd.h> // for usleep
 #include <cstdio>
+#include <random>
+#include <ctime>
 
 Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentColorScheme(0), firstStart(true), score(0) {}
 
@@ -96,7 +98,8 @@ void Game::run()
 {
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
-    Player player(actualWidth / 2, actualHeight / 2);
+    auto spawnPos = getRandomSpawnPosition(actualWidth, actualHeight);
+    Player player(spawnPos.first, spawnPos.second);
 
     while (running)
     {
@@ -138,8 +141,7 @@ void Game::handleInput(Player &player)
     case 'R':
         if (state == GAME_OVER)
         {
-            restart();
-            player.reset(); // Reset player position and direction
+            restart(player);
         }
         break;
     case 'q':
@@ -234,9 +236,18 @@ void Game::gameOver()
     state = GAME_OVER;
 }
 
-void Game::restart()
+void Game::restart(Player &player)
 {
+    // Generate new random spawn position
+    int actualWidth, actualHeight;
+    getmaxyx(stdscr, actualHeight, actualWidth);
+    auto spawnPos = getRandomSpawnPosition(actualWidth, actualHeight);
+
+    // Reset game state
     startGame();
+
+    // Reset player with new position
+    player.reset(spawnPos.first, spawnPos.second);
 }
 
 bool Game::checkTrailCollision(int x, int y, const Player &player)
@@ -340,4 +351,22 @@ void Game::setColorScheme(int scheme)
 {
     currentColorScheme = scheme;
     initColors();
+}
+
+std::pair<int, int> Game::getRandomSpawnPosition(int width, int height)
+{
+    // Initialize random seed
+    static bool seeded = false;
+    if (!seeded)
+    {
+        srand(time(nullptr));
+        seeded = true;
+    }
+
+    // Generate random position with safe margins from borders
+    int margin = 3; // Safe distance from walls
+    int x = margin + rand() % (width - 2 * margin);
+    int y = margin + rand() % (height - 2 * margin);
+
+    return std::make_pair(x, y);
 }
