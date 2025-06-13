@@ -17,6 +17,11 @@ private:
   std::vector<std::string> gameModeOptions;
   std::vector<std::string> settingsOptions;
 
+  // Current settings
+  GameSpeed currentGameSpeed;
+  GameDifficulty currentDifficulty;
+  int currentColorScheme;
+
   // Color definitions
   static const int COLOR_MENU_BORDER = 7;
   static const int COLOR_MENU_TEXT = 8;
@@ -35,9 +40,17 @@ public:
   void setState(MenuState newState);
   int getSelectedOption() const { return selectedOption; }
 
+  // Settings getters
+  GameSpeed getGameSpeed() const { return currentGameSpeed; }
+  GameDifficulty getDifficulty() const { return currentDifficulty; }
+  int getColorScheme() const { return currentColorScheme; }
+
   void showMainMenu();
   void showGameModeMenu();
   void showSettingsMenu();
+  void showGameSpeedMenu();
+  void showDifficultyMenu();
+  void showColorSchemeMenu();
 
   bool shouldStartGame() const;
   bool shouldQuit() const;
