@@ -1,6 +1,6 @@
 #include "../include/menu.h"
 
-Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORMAL), currentDifficulty(MEDIUM), currentColorScheme(0)
+Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORMAL), currentDifficulty(MEDIUM), currentColorScheme(0), currentGameMode(SINGLE_PLAYER)
 {
   mainMenuOptions = {
       "Start Game",
@@ -9,7 +9,7 @@ Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORM
       "Quit"};
   gameModeOptions = {
       "Single Player",
-      "Two Player (future)",
+      "Two Player",
       "vs Bot (future)",
       "Back"};
   settingsOptions = {
@@ -201,6 +201,14 @@ bool Menu::handleInput()
     {
       if (selectedOption == 0)
       { // Single Player - start game
+        currentGameMode = SINGLE_PLAYER;
+        currentState = MAIN_MENU;
+        selectedOption = 0; // Set to Start Game
+        resetSelection();
+      }
+      else if (selectedOption == 1)
+      { // Two Player - start game
+        currentGameMode = TWO_PLAYER;
         currentState = MAIN_MENU;
         selectedOption = 0; // Set to Start Game
         resetSelection();
@@ -362,16 +370,16 @@ void Menu::showGameModeMenu()
     mvprintw(centerY - 1, centerX - 12, "║   Single Player      ║");
   }
 
-  // Two Player (future)
+  // Two Player
   if (selectedOption == 1)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - 12, "║ > Two Player (future)║");
+    mvprintw(centerY, centerX - 12, "║ > Two Player         ║");
     attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY, centerX - 12, "║   Two Player (future)║");
+    mvprintw(centerY, centerX - 12, "║   Two Player         ║");
   }
 
   // vs Bot (future)

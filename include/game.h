@@ -14,6 +14,7 @@ private:
   bool running;
   GameState state; // Current game state
   GameSpeed currentGameSpeed;
+  GameMode currentGameMode;
   int currentColorScheme;
   bool firstStart;
 
@@ -27,9 +28,12 @@ private:
   static const int COLOR_GAME_OVER = 4;
   static const int COLOR_HUD = 5;
   static const int COLOR_MESSAGES = 6;
+  static const int COLOR_PLAYER2_HEAD = 9;
+  static const int COLOR_PLAYER2_TRAIL = 10;
 
   void initColors();
-  std::pair<int, int> getRandomSpawnPosition(int widht, int height);
+  std::pair<int, int> getRandomSpawnPosition(int width, int height);
+  std::pair<std::pair<int, int>, std::pair<int, int>> getTwoPlayerSpawnPositions(int width, int height);
 
 public:
   Game(int w, int h);
@@ -40,6 +44,9 @@ public:
   void update(Player &player);
   void render(Player &player);
   void handleInput(Player &player);
+  void handleInputTwoPlayer(Player &player1, Player &player2);
+  void updateTwoPlayer(Player &player1, Player &player2);
+  void renderTwoPlayer(Player &player1, Player &player2);
   void cleanup();
 
   bool checkWallCollision(int x, int y);
@@ -48,6 +55,9 @@ public:
   void gameOver();
   void restart(Player &player);
   void startGame();
+  void gameOverTwoPlayer(int winner); // 1=P1 wins, 2=P2 wins, 0=tie
+  void restartTwoPlayer(Player &player1, Player &player2);
+  int winner; // Add to private section
 
   void showWelcomeMessage();
   void renderHUD();
@@ -59,6 +69,7 @@ public:
   int getGameTime() const;
   void setGameSpeed(GameSpeed speed);
   void setColorScheme(int scheme);
+  void setGameMode(GameMode mode);
 
   bool isRunning() const { return running; }
   void stop() { running = false; }

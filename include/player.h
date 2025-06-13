@@ -25,13 +25,16 @@ private:
   Direction direction; // Current direction of movement
   Direction lastDirection;
   std::vector<TrailSegment> trail;
+  int playerId;
 
   // Color constants for drawing
   static const int COLOR_PLAYER_HEAD = 1;
   static const int COLOR_PLAYER_TRAIL = 2;
+  static const int COLOR_PLAYER2_HEAD = 9;
+  static const int COLOR_PLAYER2_TRAIL = 10;
 
 public:
-  Player(int startX, int startY);
+  Player(int startX, int startY, int id = 1);
 
   void move();
   void setDirection(Direction newDir);

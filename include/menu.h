@@ -21,12 +21,13 @@ private:
   GameSpeed currentGameSpeed;
   GameDifficulty currentDifficulty;
   int currentColorScheme;
+  GameMode currentGameMode;
 
   // Color definitions
-  static const int COLOR_MENU_BORDER = 7;
-  static const int COLOR_MENU_TEXT = 8;
-  static const int COLOR_MENU_SELECTED = 9;
-  static const int COLOR_MENU_TITLE = 10;
+  static const int COLOR_MENU_BORDER = 11;
+  static const int COLOR_MENU_TEXT = 12;
+  static const int COLOR_MENU_SELECTED = 13;
+  static const int COLOR_MENU_TITLE = 14;
 
 public:
   Menu();
@@ -44,6 +45,7 @@ public:
   GameSpeed getGameSpeed() const { return currentGameSpeed; }
   GameDifficulty getDifficulty() const { return currentDifficulty; }
   int getColorScheme() const { return currentColorScheme; }
+  GameMode getGameMode() const { return currentGameMode; }
 
   void showMainMenu();
   void showGameModeMenu();

@@ -72,9 +72,9 @@ const char *TrailSegment::getUnicodeChar() const
     return "┄";
 }
 
-Player::Player(int startX, int startY)
+Player::Player(int startX, int startY, int id)
     : x(startX), y(startY), startX(startX), startY(startY),
-      direction(RIGHT), lastDirection(RIGHT)
+      direction(RIGHT), lastDirection(RIGHT), playerId(id)
 {
     trail.push_back(TrailSegment(x, y, direction, direction, true)); // Head segment
 }
@@ -167,19 +167,24 @@ void Player::draw()
     for (size_t i = 0; i < trail.size(); i++)
     {
         const auto &segment = trail[i];
+
+        // Choose colors based on player ID
+        int headColor = (playerId == 1) ? COLOR_PLAYER_HEAD : COLOR_PLAYER2_HEAD;
+        int trailColor = (playerId == 1) ? COLOR_PLAYER_TRAIL : COLOR_PLAYER2_TRAIL;
+
         if (segment.isHead)
         {
-            attron(COLOR_PAIR(COLOR_PLAYER_HEAD)); // CYAN dla głowy
+            attron(COLOR_PAIR(headColor));
         }
         else
         {
-            attron(COLOR_PAIR(COLOR_PLAYER_TRAIL)); // GREEN dla śladu
+            attron(COLOR_PAIR(trailColor));
         }
         if (segment.y >= 0 && segment.y < maxY &&
             segment.x >= 0 && segment.x < maxX)
         {
             mvprintw(segment.y, segment.x, "%s", segment.getUnicodeChar());
-            attroff(COLOR_PAIR(segment.isHead ? COLOR_PLAYER_HEAD : COLOR_PLAYER_TRAIL));
+            attroff(COLOR_PAIR(segment.isHead ? headColor : trailColor));
         }
     }
 }

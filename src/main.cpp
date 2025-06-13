@@ -38,6 +38,7 @@ int main(int argc, char **argv)
                 game.init();
                 game.setGameSpeed(menu.getGameSpeed());
                 game.setColorScheme(menu.getColorScheme());
+                game.setGameMode(menu.getGameMode());
                 game.run();
                 // When game ends, return to menu
                 menu.setState(MAIN_MENU);
