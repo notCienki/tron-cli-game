@@ -101,9 +101,10 @@ void Game::run()
 
     if (currentGameMode == SINGLE_PLAYER)
     {
-        // SINGLE PLAYER MODE
-        auto spawnPos = getRandomSpawnPosition(actualWidth, actualHeight);
+        int randomSide = rand() % 4;
+        auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
         Player player(spawnPos.first, spawnPos.second);
+        player.setDirection(getSafeDirection(randomSide));
 
         while (running)
         {
@@ -115,10 +116,18 @@ void Game::run()
     }
     else if (currentGameMode == TWO_PLAYER)
     {
-        // TWO PLAYER MODE
-        auto spawnPositions = getTwoPlayerSpawnPositions(actualWidth, actualHeight);
-        Player player1(spawnPositions.first.first, spawnPositions.first.second, 1);   // Player 1
-        Player player2(spawnPositions.second.first, spawnPositions.second.second, 2); // Player 2
+        // Generate random opposite sides
+        int side1 = rand() % 4;
+        int side2 = (side1 + 2) % 4; // Opposite side
+
+        auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
+        auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
+
+        Player player1(p1_pos.first, p1_pos.second, 1);
+        Player player2(p2_pos.first, p2_pos.second, 2);
+
+        player1.setDirection(getSafeDirection(side1));
+        player2.setDirection(getSafeDirection(side2));
 
         while (running)
         {
@@ -398,9 +407,54 @@ void Game::setGameMode(GameMode mode)
     currentGameMode = mode;
 }
 
+std::pair<int, int> Game::getRandomPositionOnSide(int side, int width, int height)
+{
+    int margin = 3;
+    int x, y;
+
+    switch (side)
+    {
+    case 0: // TOP
+        x = margin + rand() % (width - 2 * margin);
+        y = margin;
+        break;
+    case 1: // RIGHT
+        x = width - margin;
+        y = margin + rand() % (height - 2 * margin);
+        break;
+    case 2: // BOTTOM
+        x = margin + rand() % (width - 2 * margin);
+        y = height - margin;
+        break;
+    case 3: // LEFT
+        x = margin;
+        y = margin + rand() % (height - 2 * margin);
+        break;
+    }
+
+    return std::make_pair(x, y);
+}
+
+Direction Game::getSafeDirection(int side)
+{
+    switch (side)
+    {
+    case 0:           // TOP
+        return DOWN;  // Move towards center (down)
+    case 1:           // RIGHT
+        return LEFT;  // Move towards center (left)
+    case 2:           // BOTTOM
+        return UP;    // Move towards center (up)
+    case 3:           // LEFT
+        return RIGHT; // Move towards center (right)
+    default:
+        return RIGHT; // Fallback
+    }
+}
+
 std::pair<std::pair<int, int>, std::pair<int, int>> Game::getTwoPlayerSpawnPositions(int width, int height)
 {
-    // Initialize random seed if needed
+    // Initialize random seed
     static bool seeded = false;
     if (!seeded)
     {
@@ -408,21 +462,14 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Game::getTwoPlayerSpawnPosit
         seeded = true;
     }
 
-    int margin = 8;      // Increased margin for safety
-    int randomRange = 5; // Small variation range
+    // Choose random opposite sides
+    int side1 = rand() % 4;
+    int side2 = (side1 + 2) % 4; // Opposite side
 
-    // Player 1: Left-top area with small randomization
-    int p1_x = margin + rand() % randomRange;
-    int p1_y = margin + rand() % randomRange;
+    auto p1_pos = getRandomPositionOnSide(side1, width, height);
+    auto p2_pos = getRandomPositionOnSide(side2, width, height);
 
-    // Player 2: Right-bottom area with small randomization
-    int p2_x = width - margin - (rand() % randomRange);
-    int p2_y = height - margin - (rand() % randomRange);
-
-    return std::make_pair(
-        std::make_pair(p1_x, p1_y), // Player 1 position
-        std::make_pair(p2_x, p2_y)  // Player 2 position
-    );
+    return std::make_pair(p1_pos, p2_pos);
 }
 
 void Game::handleInputTwoPlayer(Player &player1, Player &player2)

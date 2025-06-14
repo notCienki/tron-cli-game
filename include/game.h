@@ -34,6 +34,9 @@ private:
   void initColors();
   std::pair<int, int> getRandomSpawnPosition(int width, int height);
   std::pair<std::pair<int, int>, std::pair<int, int>> getTwoPlayerSpawnPositions(int width, int height);
+  std::pair<int, int> getRandomPositionOnSide(int side, int width, int height);
+
+  Direction getSafeDirection(int side);
 
 public:
   Game(int w, int h);
