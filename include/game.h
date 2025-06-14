@@ -1,6 +1,7 @@
 #pragma once
 
 #include "player.h"
+#include "bot.h"
 #include <ncurses.h>
 #include <chrono>
 #include <locale.h>
@@ -17,6 +18,8 @@ private:
   GameMode currentGameMode;
   int currentColorScheme;
   bool firstStart;
+
+  Bot *gameBot; // AI bot player
 
   std::chrono::steady_clock::time_point gameStartTime;
   std::chrono::steady_clock::time_point currentTime;
@@ -50,6 +53,10 @@ public:
   void handleInputTwoPlayer(Player &player1, Player &player2);
   void updateTwoPlayer(Player &player1, Player &player2);
   void renderTwoPlayer(Player &player1, Player &player2);
+  void handleInputVsBot(Player &player, Bot &bot);
+  void updateVsBot(Player &player, Bot &bot);
+  void renderVsBot(Player &player, Bot &bot);
+  void restartVsBot(Player &player, Bot &bot);
   void cleanup();
 
   bool checkWallCollision(int x, int y);

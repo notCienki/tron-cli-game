@@ -5,18 +5,16 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    // Unicode support setup (jak w Game::init())
     setlocale(LC_ALL, "");
 
     printf("\033[?1049h\033[H");
     fflush(stdout);
 
-    // Initialize ncurses
     initscr();
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
-    nodelay(stdscr, FALSE); // Blocking input for menu
+    nodelay(stdscr, FALSE);
 
     Menu menu;
     menu.init();
@@ -33,14 +31,12 @@ int main(int argc, char **argv)
             }
             else if (menu.shouldStartGame())
             {
-                // Start the game
                 Game game(80, 24);
                 game.init();
                 game.setGameSpeed(menu.getGameSpeed());
                 game.setColorScheme(menu.getColorScheme());
                 game.setGameMode(menu.getGameMode());
                 game.run();
-                // When game ends, return to menu
                 menu.setState(MAIN_MENU);
                 nodelay(stdscr, FALSE);
             }

@@ -1,11 +1,11 @@
 #include "../include/game.h"
 #include "../include/player.h"
-#include <unistd.h> // for usleep
+#include <unistd.h>
 #include <cstdio>
 #include <random>
 #include <ctime>
 
-Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0), firstStart(true), score(0), winner(0) {}
+Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0), firstStart(true), gameBot(nullptr), score(0), winner(0) {}
 
 Game::~Game()
 {
@@ -118,7 +118,7 @@ void Game::run()
     {
         // Generate random opposite sides
         int side1 = rand() % 4;
-        int side2 = (side1 + 2) % 4; // Opposite side
+        int side2 = (side1 + 2) % 4;
 
         auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
         auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
@@ -131,9 +131,35 @@ void Game::run()
 
         while (running)
         {
-            handleInputTwoPlayer(player1, player2); // New method needed
-            updateTwoPlayer(player1, player2);      // New method needed
-            renderTwoPlayer(player1, player2);      // New method needed
+            handleInputTwoPlayer(player1, player2);
+            updateTwoPlayer(player1, player2);
+            renderTwoPlayer(player1, player2);
+            usleep(currentGameSpeed);
+        }
+    }
+    else if (currentGameMode == VS_BOT)
+    {
+        if (!gameBot)
+        {
+            int side1 = rand() % 4;
+            int side2 = (side1 + 2) % 4;
+
+            auto bot_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
+
+            gameBot = new Bot(bot_pos.first, bot_pos.second, 1);
+            gameBot->getPlayer()->setDirection(getSafeDirection(side2));
+        }
+
+        int side1 = rand() % 4;
+        auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
+        Player player(p1_pos.first, p1_pos.second, 1);
+        player.setDirection(getSafeDirection(side1));
+
+        while (running)
+        {
+            handleInputVsBot(player, *gameBot);
+            updateVsBot(player, *gameBot);
+            renderVsBot(player, *gameBot);
             usleep(currentGameSpeed);
         }
     }
@@ -141,7 +167,7 @@ void Game::run()
 
 void Game::handleInput(Player &player)
 {
-    int ch = getch(); // Get user input
+    int ch = getch();
     switch (ch)
     {
     case KEY_UP:
@@ -169,8 +195,8 @@ void Game::handleInput(Player &player)
         break;
     case 'q':
     case 'Q':
-    case 27:    // ESC key
-        stop(); // Stop the game
+    case 27:
+        stop();
         break;
     }
 }
@@ -204,15 +230,13 @@ void Game::render(Player &player)
 {
     clear();
 
-    drawBorders(); // Draw the game borders
+    drawBorders();
     if (state == PLAYING)
     {
         player.draw();
 
-        // TOP HUD
         attron(COLOR_PAIR(COLOR_HUD));
         mvprintw(0, 3, "╣ Score: %d ║ Time: %ds ╠", score, getGameTime());
-        // BOTTOM HUD
         int bottomY = height - 1;
         mvprintw(bottomY, 3, "╣ ⇠⇡⇢⇣ Move ║ Q Quit ║ R Restart ╠");
         attroff(COLOR_PAIR(COLOR_HUD));
@@ -222,7 +246,6 @@ void Game::render(Player &player)
         int centerX = width / 2;
         int centerY = height / 2;
 
-        // Game Over box podobny do welcome message
         attron(COLOR_PAIR(COLOR_GAME_OVER));
         mvprintw(centerY - 3, centerX - 12, "╔══════════════════════╗");
         mvprintw(centerY - 2, centerX - 12, "║      GAME OVER!      ║");
@@ -250,7 +273,6 @@ void Game::cleanup()
 
 bool Game::checkWallCollision(int x, int y)
 {
-    // Check if the player is out of bounds
     return (x <= 0 || x >= width - 1 || y <= 0 || y >= height - 1);
 }
 
@@ -261,15 +283,12 @@ void Game::gameOver()
 
 void Game::restart(Player &player)
 {
-    // Generate new random spawn position
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
     auto spawnPos = getRandomSpawnPosition(actualWidth, actualHeight);
 
-    // Reset game state
     startGame();
 
-    // Reset player with new position
     player.reset(spawnPos.first, spawnPos.second);
 }
 
@@ -282,11 +301,10 @@ bool Game::checkTrailCollision(int x, int y, const Player &player)
         return false;
     }
 
-    // TrailSegment ma .x i .y, nie .first i .second!
     for (size_t i = 0; i < trail.size() - 2; i++)
     {
         if (trail[i].x == x && trail[i].y == y)
-        { // .x i .y zamiast .first i .second
+        {
             return true;
         }
     }
@@ -305,14 +323,12 @@ void Game::drawBorders()
     }
     mvprintw(0, width - 1, "╗");
 
-    // Side borders
     for (int y = 1; y < height - 1; y++)
     {
         mvprintw(y, 0, "║");
         mvprintw(y, width - 1, "║");
     }
 
-    // Bottom border
     mvprintw(height - 1, 0, "╚");
     for (int x = 1; x < width - 1; x++)
     {
@@ -333,33 +349,32 @@ void Game::initColors()
     if (has_colors())
     {
         start_color();
-        use_default_colors(); // DODAJ TĘ LINIĘ!
+        use_default_colors();
 
-        // 3 schematy kolorów
         switch (currentColorScheme)
         {
-        case 0: // CLASSIC
+        case 0:
             init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
             init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
             init_pair(COLOR_PLAYER2_HEAD, COLOR_RED, -1);
             init_pair(COLOR_PLAYER2_TRAIL, COLOR_YELLOW, -1);
             init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
             break;
-        case 1: // NEON
+        case 1:
             init_pair(COLOR_PLAYER_HEAD, COLOR_MAGENTA, -1);
             init_pair(COLOR_PLAYER_TRAIL, COLOR_YELLOW, -1);
             init_pair(COLOR_PLAYER2_HEAD, COLOR_GREEN, -1);
             init_pair(COLOR_PLAYER2_TRAIL, COLOR_CYAN, -1);
             init_pair(COLOR_BORDERS, COLOR_RED, -1);
             break;
-        case 2: // RETRO
+        case 2:
             init_pair(COLOR_PLAYER_HEAD, COLOR_GREEN, -1);
             init_pair(COLOR_PLAYER_TRAIL, COLOR_WHITE, -1);
             init_pair(COLOR_PLAYER2_HEAD, COLOR_YELLOW, -1);
             init_pair(COLOR_PLAYER2_TRAIL, COLOR_MAGENTA, -1);
             init_pair(COLOR_BORDERS, COLOR_GREEN, -1);
             break;
-        default: // Fallback to CLASSIC
+        default:
             init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
             init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
             init_pair(COLOR_PLAYER2_HEAD, COLOR_RED, -1);
@@ -367,9 +382,9 @@ void Game::initColors()
             init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
             break;
         }
-        init_pair(COLOR_GAME_OVER, COLOR_RED, -1);    // zamiast COLOR_BLACK
-        init_pair(COLOR_HUD, COLOR_YELLOW, -1);       // zamiast COLOR_BLACK
-        init_pair(COLOR_MESSAGES, COLOR_MAGENTA, -1); // zamiast COLOR_BLACK
+        init_pair(COLOR_GAME_OVER, COLOR_RED, -1);
+        init_pair(COLOR_HUD, COLOR_YELLOW, -1);
+        init_pair(COLOR_MESSAGES, COLOR_MAGENTA, -1);
     }
 }
 
@@ -386,7 +401,6 @@ void Game::setColorScheme(int scheme)
 
 std::pair<int, int> Game::getRandomSpawnPosition(int width, int height)
 {
-    // Initialize random seed
     static bool seeded = false;
     if (!seeded)
     {
@@ -394,8 +408,7 @@ std::pair<int, int> Game::getRandomSpawnPosition(int width, int height)
         seeded = true;
     }
 
-    // Generate random position with safe margins from borders
-    int margin = 3; // Safe distance from walls
+    int margin = 3;
     int x = margin + rand() % (width - 2 * margin);
     int y = margin + rand() % (height - 2 * margin);
 
@@ -414,19 +427,19 @@ std::pair<int, int> Game::getRandomPositionOnSide(int side, int width, int heigh
 
     switch (side)
     {
-    case 0: // TOP
+    case 0:
         x = margin + rand() % (width - 2 * margin);
         y = margin;
         break;
-    case 1: // RIGHT
+    case 1:
         x = width - margin;
         y = margin + rand() % (height - 2 * margin);
         break;
-    case 2: // BOTTOM
+    case 2:
         x = margin + rand() % (width - 2 * margin);
         y = height - margin;
         break;
-    case 3: // LEFT
+    case 3:
         x = margin;
         y = margin + rand() % (height - 2 * margin);
         break;
@@ -439,22 +452,21 @@ Direction Game::getSafeDirection(int side)
 {
     switch (side)
     {
-    case 0:           // TOP
-        return DOWN;  // Move towards center (down)
-    case 1:           // RIGHT
-        return LEFT;  // Move towards center (left)
-    case 2:           // BOTTOM
-        return UP;    // Move towards center (up)
-    case 3:           // LEFT
-        return RIGHT; // Move towards center (right)
+    case 0:
+        return DOWN;
+    case 1:
+        return LEFT;
+    case 2:
+        return UP;
+    case 3:
+        return RIGHT;
     default:
-        return RIGHT; // Fallback
+        return RIGHT;
     }
 }
 
 std::pair<std::pair<int, int>, std::pair<int, int>> Game::getTwoPlayerSpawnPositions(int width, int height)
 {
-    // Initialize random seed
     static bool seeded = false;
     if (!seeded)
     {
@@ -462,9 +474,8 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Game::getTwoPlayerSpawnPosit
         seeded = true;
     }
 
-    // Choose random opposite sides
     int side1 = rand() % 4;
-    int side2 = (side1 + 2) % 4; // Opposite side
+    int side2 = (side1 + 2) % 4;
 
     auto p1_pos = getRandomPositionOnSide(side1, width, height);
     auto p2_pos = getRandomPositionOnSide(side2, width, height);
@@ -477,7 +488,6 @@ void Game::handleInputTwoPlayer(Player &player1, Player &player2)
     int ch = getch();
     switch (ch)
     {
-    // Player 1 controls (arrows)
     case KEY_UP:
         if (state == PLAYING)
             player1.setDirection(UP);
@@ -495,7 +505,6 @@ void Game::handleInputTwoPlayer(Player &player1, Player &player2)
             player1.setDirection(RIGHT);
         break;
 
-    // Player 2 controls (WASD)
     case 'w':
     case 'W':
         if (state == PLAYING)
@@ -517,7 +526,6 @@ void Game::handleInputTwoPlayer(Player &player1, Player &player2)
             player2.setDirection(RIGHT);
         break;
 
-    // Game controls
     case 'r':
     case 'R':
         if (state == GAME_OVER)
@@ -540,54 +548,43 @@ void Game::updateTwoPlayer(Player &player1, Player &player2)
 
     updateScore();
 
-    // Get next positions for both players
     int p1_nextX = player1.getNextX();
     int p1_nextY = player1.getNextY();
     int p2_nextX = player2.getNextX();
     int p2_nextY = player2.getNextY();
 
-    // Check wall collisions
     bool p1_wallHit = checkWallCollision(p1_nextX, p1_nextY);
     bool p2_wallHit = checkWallCollision(p2_nextX, p2_nextY);
 
-    // Check trail collisions (self)
     bool p1_trailHit = checkTrailCollision(p1_nextX, p1_nextY, player1);
     bool p2_trailHit = checkTrailCollision(p2_nextX, p2_nextY, player2);
 
-    // Check cross-player trail collisions
     bool p1_hitP2Trail = checkTrailCollision(p1_nextX, p1_nextY, player2);
     bool p2_hitP1Trail = checkTrailCollision(p2_nextX, p2_nextY, player1);
 
-    // Check head-to-head collision
     bool headToHead = (p1_nextX == p2_nextX && p1_nextY == p2_nextY);
 
-    // Determine game outcome
     bool p1_loses = p1_wallHit || p1_trailHit || p1_hitP2Trail;
     bool p2_loses = p2_wallHit || p2_trailHit || p2_hitP1Trail;
 
     if (headToHead)
     {
-        // Both players crash into each other - TIE
-        gameOverTwoPlayer(0); // 0 = tie
+        gameOverTwoPlayer(0);
     }
     else if (p1_loses && p2_loses)
     {
-        // Both crash simultaneously - TIE
-        gameOverTwoPlayer(0); // 0 = tie
+        gameOverTwoPlayer(0);
     }
     else if (p1_loses)
     {
-        // Player 1 loses, Player 2 wins
-        gameOverTwoPlayer(2); // 2 = player 2 wins
+        gameOverTwoPlayer(2);
     }
     else if (p2_loses)
     {
-        // Player 2 loses, Player 1 wins
-        gameOverTwoPlayer(1); // 1 = player 1 wins
+        gameOverTwoPlayer(1);
     }
     else
     {
-        // No collisions - move both players
         player1.move();
         player2.move();
     }
@@ -603,7 +600,6 @@ void Game::renderTwoPlayer(Player &player1, Player &player2)
         player1.draw();
         player2.draw();
 
-        // HUD
         attron(COLOR_PAIR(COLOR_HUD));
         mvprintw(0, 3, "╣ Player 1 vs Player 2 ║ Time: %ds ╠", getGameTime());
         int bottomY = height - 1;
@@ -615,7 +611,6 @@ void Game::renderTwoPlayer(Player &player1, Player &player2)
         int centerX = width / 2;
         int centerY = height / 2;
 
-        // Winner announcement box
         attron(COLOR_PAIR(COLOR_GAME_OVER));
         mvprintw(centerY - 3, centerX - 15, "╔═══════════════════════════════╗");
 
@@ -654,17 +649,168 @@ void Game::gameOverTwoPlayer(int winnerPlayer)
 
 void Game::restartTwoPlayer(Player &player1, Player &player2)
 {
-    // Generate new spawn positions
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
     auto spawnPositions = getTwoPlayerSpawnPositions(actualWidth, actualHeight);
 
-    // Reset game state
     startGame();
 
-    // Reset both players with new positions
     player1.reset(spawnPositions.first.first, spawnPositions.first.second);
     player2.reset(spawnPositions.second.first, spawnPositions.second.second);
 
-    winner = 0; // Reset winner
+    winner = 0;
+}
+
+void Game::handleInputVsBot(Player &player, Bot &bot)
+{
+    int ch = getch();
+    switch (ch)
+    {
+    case KEY_UP:
+        if (state == PLAYING)
+            player.setDirection(UP);
+        break;
+    case KEY_DOWN:
+        if (state == PLAYING)
+            player.setDirection(DOWN);
+        break;
+    case KEY_LEFT:
+        if (state == PLAYING)
+            player.setDirection(LEFT);
+        break;
+    case KEY_RIGHT:
+        if (state == PLAYING)
+            player.setDirection(RIGHT);
+        break;
+    case 'r':
+    case 'R':
+        if (state == GAME_OVER)
+        {
+            restartVsBot(player, bot);
+        }
+        break;
+    case 'q':
+    case 'Q':
+    case 27:
+        stop();
+        break;
+    }
+}
+
+void Game::updateVsBot(Player &player, Bot &bot)
+{
+    if (state != PLAYING)
+        return;
+
+    updateScore();
+
+    bot.update(player, width, height);
+
+    int p_nextX = player.getNextX();
+    int p_nextY = player.getNextY();
+    int b_nextX = bot.getPlayer()->getNextX();
+    int b_nextY = bot.getPlayer()->getNextY();
+
+    bool p_wallHit = checkWallCollision(p_nextX, p_nextY);
+    bool b_wallHit = checkWallCollision(b_nextX, b_nextY);
+
+    bool p_trailHit = checkTrailCollision(p_nextX, p_nextY, player);
+    bool b_trailHit = checkTrailCollision(b_nextX, b_nextY, *bot.getPlayer());
+
+    bool p_hitBotTrail = checkTrailCollision(p_nextX, p_nextY, *bot.getPlayer());
+    bool b_hitPlayerTrail = checkTrailCollision(b_nextX, b_nextY, player);
+
+    bool headToHead = (p_nextX == b_nextX && p_nextY == b_nextY);
+
+    bool p_loses = p_wallHit || p_trailHit || p_hitBotTrail;
+    bool b_loses = b_wallHit || b_trailHit || b_hitPlayerTrail;
+
+    if (headToHead || (p_loses && b_loses))
+    {
+        gameOverTwoPlayer(0);
+    }
+    else if (p_loses)
+    {
+        gameOverTwoPlayer(2);
+    }
+    else if (b_loses)
+    {
+        gameOverTwoPlayer(1);
+    }
+    else
+    {
+        player.move();
+        bot.getPlayer()->move();
+    }
+}
+
+void Game::renderVsBot(Player &player, Bot &bot)
+{
+    clear();
+    drawBorders();
+
+    if (state == PLAYING)
+    {
+        player.draw();
+        bot.getPlayer()->draw();
+
+        // HUD
+        attron(COLOR_PAIR(COLOR_HUD));
+        mvprintw(0, 3, "╣ Player vs Bot ║ Time: %ds ╠", getGameTime());
+        int bottomY = height - 1;
+        mvprintw(bottomY, 3, "╣ Arrows=Move ║ Q=Quit ║ R=Restart ╠");
+        attroff(COLOR_PAIR(COLOR_HUD));
+    }
+    else if (state == GAME_OVER)
+    {
+        int centerX = width / 2;
+        int centerY = height / 2;
+
+        attron(COLOR_PAIR(COLOR_GAME_OVER));
+        mvprintw(centerY - 3, centerX - 15, "╔═══════════════════════════════╗");
+
+        if (winner == 1)
+        {
+            mvprintw(centerY - 2, centerX - 15, "║        PLAYER WINS!           ║");
+        }
+        else if (winner == 2)
+        {
+            mvprintw(centerY - 2, centerX - 15, "║         BOT WINS!             ║");
+        }
+        else
+        {
+            mvprintw(centerY - 2, centerX - 15, "║         TIE GAME!             ║");
+        }
+
+        mvprintw(centerY - 1, centerX - 15, "╠═══════════════════════════════╣");
+        mvprintw(centerY, centerX - 15, "║ Time: %2ds   ║  Score: %3d     ║", getGameTime(), score);
+        mvprintw(centerY + 1, centerX - 15, "╠═══════════════════════════════╣");
+        attroff(COLOR_PAIR(COLOR_GAME_OVER));
+
+        attron(COLOR_PAIR(COLOR_MESSAGES));
+        mvprintw(centerY + 2, centerX - 15, "║     R-Restart    Q-Quit       ║");
+        mvprintw(centerY + 3, centerX - 15, "╚═══════════════════════════════╝");
+        attroff(COLOR_PAIR(COLOR_MESSAGES));
+    }
+
+    refresh();
+}
+
+void Game::restartVsBot(Player &player, Bot &bot)
+{
+    int actualWidth, actualHeight;
+    getmaxyx(stdscr, actualHeight, actualWidth);
+
+    int side1 = rand() % 4;
+    int side2 = (side1 + 2) % 4;
+
+    auto p_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
+    auto b_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
+
+    startGame();
+
+    player.reset(p_pos.first, p_pos.second);
+    bot.reset(b_pos.first, b_pos.second);
+
+    winner = 0;
 }

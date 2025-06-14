@@ -9,7 +9,7 @@ char TrailSegment::getChar() const
         {
         case UP:
         case DOWN:
-            return '|'; // Zwracamy ASCII char dla identyfikacji
+            return '|';
         case LEFT:
         case RIGHT:
             return '-';
@@ -19,17 +19,16 @@ char TrailSegment::getChar() const
     }
     else
     {
-        return '+'; // ASCII char dla zakrętów
+        return '+';
     }
 }
 
 const char *TrailSegment::getUnicodeChar() const
 {
-    // Jeśli to głowa gracza, zwróć symbol gracza
     if (isHead)
     {
         switch (to)
-        { // używamy 'to' jako aktualny kierunek
+        {
         case UP:
             return "⇡";
         case DOWN:
@@ -49,24 +48,24 @@ const char *TrailSegment::getUnicodeChar() const
         {
         case UP:
         case DOWN:
-            return "┆"; // Unicode vertical
+            return "┆";
         case LEFT:
         case RIGHT:
-            return "┄"; // Unicode horizontal
+            return "┄";
         default:
-            return "┄"; // Default horizontal
+            return "┄";
         }
     }
     else
     {
         if ((from == LEFT && to == DOWN) || (from == UP && to == RIGHT))
-            return "┌"; // ┌ lewy górny róg
+            return "┌";
         if ((from == RIGHT && to == DOWN) || (from == UP && to == LEFT))
-            return "┐"; // ┐ prawy górny róg
+            return "┐";
         if ((from == LEFT && to == UP) || (from == DOWN && to == RIGHT))
-            return "└"; // └ lewy dolny róg
+            return "└";
         if ((from == RIGHT && to == UP) || (from == DOWN && to == LEFT))
-            return "┘"; // ┘ prawy dolny róg
+            return "┘";
     }
 
     return "┄";
@@ -76,19 +75,17 @@ Player::Player(int startX, int startY, int id)
     : x(startX), y(startY), startX(startX), startY(startY),
       direction(RIGHT), lastDirection(RIGHT), playerId(id)
 {
-    trail.push_back(TrailSegment(x, y, direction, direction, true)); // Head segment
+    trail.push_back(TrailSegment(x, y, direction, direction, true));
 }
 
 void Player::move()
 {
-    // Przekonwertuj obecną głowę na segment trail i ustaw zakręt
     if (!trail.empty())
     {
-        trail.back().to = direction; // To tworzy zakręt!
+        trail.back().to = direction;
         trail.back().isHead = false;
     }
 
-    // Zaktualizuj pozycję gracza
     switch (direction)
     {
     case UP:
@@ -105,25 +102,22 @@ void Player::move()
         break;
     }
 
-    // Dodaj nową głowę (zawsze prosta linia)
     trail.push_back(TrailSegment(x, y, direction, direction, true));
 
-    // Zaktualizuj lastDirection
     lastDirection = direction;
 }
 
 void Player::setDirection(Direction newDir)
 {
-    // Prevent reversing direction
     if ((direction == UP && newDir == DOWN) ||
         (direction == DOWN && newDir == UP) ||
         (direction == LEFT && newDir == RIGHT) ||
         (direction == RIGHT && newDir == LEFT))
     {
-        return; // Don't allow reversing
+        return;
     }
 
-    direction = newDir; // Update direction
+    direction = newDir;
 }
 
 char Player::getPlayerChar() const
@@ -163,12 +157,10 @@ void Player::draw()
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
 
-    // Rysuj wszystkie segmenty (łącznie z głową)
     for (size_t i = 0; i < trail.size(); i++)
     {
         const auto &segment = trail[i];
 
-        // Choose colors based on player ID
         int headColor = (playerId == 1) ? COLOR_PLAYER_HEAD : COLOR_PLAYER2_HEAD;
         int trailColor = (playerId == 1) ? COLOR_PLAYER_TRAIL : COLOR_PLAYER2_TRAIL;
 
@@ -221,17 +213,17 @@ void Player::reset(int newX, int newY)
     {
         x = newX;
         y = newY;
-        startX = newX; // Update starting position
+        startX = newX;
         startY = newY;
     }
     else
     {
-        x = startX; // Reset to starting position
+        x = startX;
         y = startY;
     }
 
-    direction = RIGHT;                                               // Reset direction to default
-    lastDirection = RIGHT;                                           // Reset last direction
-    trail.clear();                                                   // Clear the trail history
-    trail.push_back(TrailSegment(x, y, direction, direction, true)); // Add starting head segment
+    direction = RIGHT;
+    lastDirection = RIGHT;
+    trail.clear();
+    trail.push_back(TrailSegment(x, y, direction, direction, true));
 }

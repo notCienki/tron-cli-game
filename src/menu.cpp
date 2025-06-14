@@ -10,7 +10,7 @@ Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORM
   gameModeOptions = {
       "Single Player",
       "Two Player",
-      "vs Bot (future)",
+      "vs Bot",
       "Back"};
   settingsOptions = {
       "Game Speed",
@@ -21,7 +21,7 @@ Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORM
 
 Menu::~Menu()
 {
-  endwin(); // Clean up ncurses
+  endwin();
 }
 
 void Menu::init()
@@ -49,6 +49,7 @@ void Menu::render()
 
   int termHeight, termWidth;
   getmaxyx(stdscr, termHeight, termWidth);
+  (void)termHeight;
 
   switch (currentState)
   {
@@ -71,7 +72,6 @@ void Menu::render()
     showColorSchemeMenu();
     break;
   case IN_GAME:
-    // In-game rendering handled by Game class
     break;
   }
 
@@ -86,17 +86,14 @@ void Menu::showMainMenu()
   int centerX = termWidth / 2;
   int centerY = termHeight / 2;
 
-  // Title box (jak w welcome message)
   attron(COLOR_PAIR(COLOR_MENU_TITLE));
   mvprintw(centerY - 4, centerX - 12, "╔══════════════════════╗");
   mvprintw(centerY - 3, centerX - 12, "║      TRON GAME       ║");
   mvprintw(centerY - 2, centerX - 12, "╠══════════════════════╣");
   attroff(COLOR_PAIR(COLOR_MENU_TITLE));
 
-  // Menu options w tym samym box-ie - manualne formatowanie
   attron(COLOR_PAIR(COLOR_MENU_TEXT));
 
-  // Start Game
   if (selectedOption == 0)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -108,7 +105,6 @@ void Menu::showMainMenu()
     mvprintw(centerY - 1, centerX - 12, "║   Start Game         ║");
   }
 
-  // Game Mode
   if (selectedOption == 1)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -120,7 +116,6 @@ void Menu::showMainMenu()
     mvprintw(centerY, centerX - 12, "║   Game Mode          ║");
   }
 
-  // Settings
   if (selectedOption == 2)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -132,7 +127,6 @@ void Menu::showMainMenu()
     mvprintw(centerY + 1, centerX - 12, "║   Settings           ║");
   }
 
-  // Quit
   if (selectedOption == 3)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -161,7 +155,7 @@ bool Menu::handleInput()
     break;
   case KEY_DOWN:
   {
-    int maxOptions = 0; // Owiń w nawiasy klamrowe
+    int maxOptions = 0;
     if (currentState == MAIN_MENU)
       maxOptions = mainMenuOptions.size();
     else if (currentState == GAME_MODE_MENU)
@@ -169,11 +163,9 @@ bool Menu::handleInput()
     else if (currentState == SETTINGS_MENU)
       maxOptions = settingsOptions.size();
     else if (currentState == GAME_SPEED_MENU)
-      maxOptions = 4; // Slow, Normal, Fast, Back
-    else if (currentState == DIFFICULTY_MENU)
-      maxOptions = 4; // Easy, Medium, Hard, Back
+      maxOptions = 4;
     else if (currentState == COLOR_SCHEME_MENU)
-      maxOptions = 4; // 3 color schemes + Back
+      maxOptions = 4;
 
     if (selectedOption < maxOptions - 1)
     {
@@ -181,18 +173,17 @@ bool Menu::handleInput()
     }
     break;
   }
-  case '\n': // Enter key
+  case '\n':
   case ' ':
-    // Handle menu selection
     if (currentState == MAIN_MENU)
     {
       if (selectedOption == 1)
-      { // Game Mode
+      {
         currentState = GAME_MODE_MENU;
         resetSelection();
       }
       else if (selectedOption == 2)
-      { // Settings
+      {
         currentState = SETTINGS_MENU;
         resetSelection();
       }
@@ -200,70 +191,77 @@ bool Menu::handleInput()
     else if (currentState == GAME_MODE_MENU)
     {
       if (selectedOption == 0)
-      { // Single Player - start game
+      {
         currentGameMode = SINGLE_PLAYER;
         currentState = MAIN_MENU;
-        selectedOption = 0; // Set to Start Game
+        selectedOption = 0;
         resetSelection();
       }
       else if (selectedOption == 1)
-      { // Two Player - start game
+      {
         currentGameMode = TWO_PLAYER;
         currentState = MAIN_MENU;
-        selectedOption = 0; // Set to Start Game
+        selectedOption = 0;
+        resetSelection();
+      }
+      else if (selectedOption == 2)
+      {
+        currentGameMode = VS_BOT;
+        currentState = MAIN_MENU;
+        selectedOption = 0;
         resetSelection();
       }
       else if (selectedOption == 3)
-      { // Back
+      {
         currentState = MAIN_MENU;
-        selectedOption = 1; // Set back to Game Mode option
+        selectedOption = 1;
       }
     }
     else if (currentState == SETTINGS_MENU)
     {
       if (selectedOption == 0)
-      { // Game Speed
+      {
         currentState = GAME_SPEED_MENU;
         resetSelection();
       }
       else if (selectedOption == 1)
-      { // Difficulty
+      {
         currentState = DIFFICULTY_MENU;
         resetSelection();
       }
       else if (selectedOption == 2)
-      { // Colors
+      {
         currentState = COLOR_SCHEME_MENU;
         resetSelection();
       }
       else if (selectedOption == 3)
-      { // Back
+      {
         currentState = MAIN_MENU;
-        selectedOption = 2; // Set back to Settings option
+        selectedOption = 2;
       }
     }
     else if (currentState == GAME_SPEED_MENU)
     {
       if (selectedOption == 0)
-      { // Slow
+      {
         currentGameSpeed = SLOW;
         currentState = SETTINGS_MENU;
         selectedOption = 0;
       }
       else if (selectedOption == 1)
-      { // Normal
+      {
         currentGameSpeed = NORMAL;
         currentState = SETTINGS_MENU;
         selectedOption = 0;
       }
       else if (selectedOption == 2)
-      { // Fast
+      {
         currentGameSpeed = FAST;
         currentState = SETTINGS_MENU;
         selectedOption = 0;
       }
       else if (selectedOption == 3)
-      { // Back
+      {
         currentState = SETTINGS_MENU;
         selectedOption = 0;
       }
@@ -271,25 +269,25 @@ bool Menu::handleInput()
     else if (currentState == DIFFICULTY_MENU)
     {
       if (selectedOption == 0)
-      { // Easy
+      {
         currentDifficulty = EASY;
         currentState = SETTINGS_MENU;
         selectedOption = 1;
       }
       else if (selectedOption == 1)
-      { // Medium
+      {
         currentDifficulty = MEDIUM;
         currentState = SETTINGS_MENU;
         selectedOption = 1;
       }
       else if (selectedOption == 2)
-      { // Hard
+      {
         currentDifficulty = HARD;
         currentState = SETTINGS_MENU;
         selectedOption = 1;
       }
       else if (selectedOption == 3)
-      { // Back
+      {
         currentState = SETTINGS_MENU;
         selectedOption = 1;
       }
@@ -297,27 +295,27 @@ bool Menu::handleInput()
     else if (currentState == COLOR_SCHEME_MENU)
     {
       if (selectedOption >= 0 && selectedOption < 3)
-      {                                      // Color Scheme options
-        currentColorScheme = selectedOption; // Set color scheme
+      {
+        currentColorScheme = selectedOption;
         currentState = SETTINGS_MENU;
-        selectedOption = 2; // Set back to Colors option
+        selectedOption = 2;
       }
       else if (selectedOption == 3)
-      { // Back
+      {
         currentState = SETTINGS_MENU;
-        selectedOption = 2; // Set back to Colors option
+        selectedOption = 2;
       }
     }
 
-    return true; // Option selected
-  case 'q':      // Quit
+    return true;
+  case 'q':
   case 'Q':
-  case 27:                    // Escape key
-    currentState = MAIN_MENU; // Return to main menu
-    selectedOption = 3;       // Reset selection
+  case 27:
+    currentState = MAIN_MENU;
+    selectedOption = 3;
     return true;
   }
-  return false; // No action taken
+  return false;
 }
 
 bool Menu::shouldStartGame() const
@@ -338,7 +336,7 @@ void Menu::setState(MenuState newState)
 
 void Menu::resetSelection()
 {
-  selectedOption = 0; // Reset to first option
+  selectedOption = 0;
 }
 
 void Menu::showGameModeMenu()
@@ -356,9 +354,7 @@ void Menu::showGameModeMenu()
   attroff(COLOR_PAIR(COLOR_MENU_TITLE));
 
   attron(COLOR_PAIR(COLOR_MENU_TEXT));
-  // USUŃ całą pętlę for i ZAMIEŃ na:
 
-  // Single Player
   if (selectedOption == 0)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -370,7 +366,6 @@ void Menu::showGameModeMenu()
     mvprintw(centerY - 1, centerX - 12, "║   Single Player      ║");
   }
 
-  // Two Player
   if (selectedOption == 1)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -382,19 +377,17 @@ void Menu::showGameModeMenu()
     mvprintw(centerY, centerX - 12, "║   Two Player         ║");
   }
 
-  // vs Bot (future)
   if (selectedOption == 2)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - 12, "║ > vs Bot (future)    ║");
+    mvprintw(centerY + 1, centerX - 12, "║ > vs Bot             ║");
     attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 1, centerX - 12, "║   vs Bot (future)    ║");
+    mvprintw(centerY + 1, centerX - 12, "║   vs Bot             ║");
   }
 
-  // Back
   if (selectedOption == 3)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
