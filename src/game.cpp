@@ -1,5 +1,6 @@
 #include "../include/game.h"
-#include "../include/player.h"
+#include "../include/entities/player.h"
+#include "../include/core/GameConfig.h"
 #include <unistd.h>
 #include <cstdio>
 #include <random>
@@ -58,15 +59,15 @@ void Game::showWelcomeMessage()
     int centerX = width / 2;
     int centerY = height / 2;
 
-    mvprintw(centerY - 3, centerX - 12, "╔══════════════════════╗");
-    mvprintw(centerY - 2, centerX - 12, "║      TRON GAME       ║");
-    mvprintw(centerY - 1, centerX - 12, "╠══════════════════════╣");
-    mvprintw(centerY, centerX - 12, "║   Use ⇠⇡⇢⇣ to move   ║");
-    mvprintw(centerY + 1, centerX - 12, "║ Avoid walls & trails ║");
-    mvprintw(centerY + 2, centerX - 12, "╚══════════════════════╝");
+    mvprintw(centerY - 3, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "╔══════════════════════╗");
+    mvprintw(centerY - 2, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "║      TRON GAME       ║");
+    mvprintw(centerY - 1, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "╠══════════════════════╣");
+    mvprintw(centerY, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "║   Use ⇠⇡⇢⇣ to move   ║");
+    mvprintw(centerY + 1, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "║ Avoid walls & trails ║");
+    mvprintw(centerY + 2, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "╚══════════════════════╝");
 
     refresh();
-    sleep(2);
+    sleep(GameConfig::WELCOME_MESSAGE_DURATION_SEC);
 }
 
 void Game::updateScore()
@@ -104,7 +105,7 @@ void Game::run()
 
     if (currentGameMode == SINGLE_PLAYER)
     {
-        int randomSide = rand() % 4;
+        int randomSide = rand() % GameConfig::SPAWN_SIDES_COUNT;
         auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
         Direction safeDir = getSafeDirection(randomSide);
         Player player(spawnPos.first, spawnPos.second, 1, safeDir);
@@ -120,7 +121,7 @@ void Game::run()
     }
     else if (currentGameMode == TWO_PLAYER)
     {
-        int side1 = rand() % 4;
+        int side1 = rand() % GameConfig::SPAWN_SIDES_COUNT;
         int side2 = (side1 + 2) % 4;
 
         auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
@@ -144,7 +145,7 @@ void Game::run()
     }
     else if (currentGameMode == VS_BOT)
     {
-        int side1 = rand() % 4;
+        int side1 = rand() % GameConfig::SPAWN_SIDES_COUNT;
         int side2 = (side1 + 2) % 4;
         if (!gameBot)
         {
@@ -290,7 +291,7 @@ void Game::restart(Player &player)
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
-    int randomSide = rand() % 4;
+    int randomSide = rand() % GameConfig::SPAWN_SIDES_COUNT;
     auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
     Direction safeDir = getSafeDirection(randomSide);
 
@@ -304,7 +305,7 @@ bool Game::checkTrailCollision(int x, int y, const Player &player)
 {
     const auto &trail = player.getTrail();
 
-    if (trail.size() <= 2)
+    if (trail.size() <= GameConfig::MIN_TRAIL_LENGTH_FOR_COLLISION)
     {
         return false;
     }
@@ -416,7 +417,7 @@ std::pair<int, int> Game::getRandomSpawnPosition(int width, int height)
         seeded = true;
     }
 
-    int margin = 10;
+    int margin = GameConfig::SPAWN_MARGIN;
     int x = margin + rand() % (width - 2 * margin);
     int y = margin + rand() % (height - 2 * margin);
 
@@ -430,7 +431,7 @@ void Game::setGameMode(GameMode mode)
 
 std::pair<int, int> Game::getRandomPositionOnSide(int side, int width, int height)
 {
-    int margin = 10;
+    int margin = GameConfig::SPAWN_MARGIN;
     int x, y;
 
     switch (side)
@@ -482,7 +483,7 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Game::getTwoPlayerSpawnPosit
         seeded = true;
     }
 
-    int side1 = rand() % 4;
+    int side1 = rand() % GameConfig::SPAWN_SIDES_COUNT;
     int side2 = (side1 + 2) % 4;
 
     auto p1_pos = getRandomPositionOnSide(side1, width, height);
@@ -660,7 +661,7 @@ void Game::restartTwoPlayer(Player &player1, Player &player2)
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
-    int side1 = rand() % 4;
+    int side1 = rand() % GameConfig::SPAWN_SIDES_COUNT;
     int side2 = (side1 + 2) % 4;
 
     auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
@@ -818,7 +819,7 @@ void Game::restartVsBot(Player &player, Bot &bot)
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
-    int side1 = rand() % 4;
+    int side1 = rand() % GameConfig::SPAWN_SIDES_COUNT;
     int side2 = (side1 + 2) % 4;
 
     auto p_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
