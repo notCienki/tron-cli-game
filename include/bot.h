@@ -15,7 +15,7 @@ private:
   bool isPositionSafe(int x, int y, const Player &opponent, int width, int height);
 
 public:
-  Bot(int startX, int startY, int difficultyLevel = 1);
+  Bot(int startX, int startY, int difficultyLevel = 1, Direction startDirection = RIGHT);
   ~Bot();
 
   void update(const Player &opponent, int width, int height);

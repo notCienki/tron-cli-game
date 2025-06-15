@@ -99,12 +99,16 @@ void Game::run()
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
+    width = actualWidth;
+    height = actualHeight;
+
     if (currentGameMode == SINGLE_PLAYER)
     {
         int randomSide = rand() % 4;
         auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
-        Player player(spawnPos.first, spawnPos.second);
-        player.setDirection(getSafeDirection(randomSide));
+        Direction safeDir = getSafeDirection(randomSide);
+        Player player(spawnPos.first, spawnPos.second, 1, safeDir);
+        player.initializeTrail();
 
         while (running)
         {
@@ -116,18 +120,19 @@ void Game::run()
     }
     else if (currentGameMode == TWO_PLAYER)
     {
-        // Generate random opposite sides
         int side1 = rand() % 4;
         int side2 = (side1 + 2) % 4;
 
         auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
         auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
 
-        Player player1(p1_pos.first, p1_pos.second, 1);
-        Player player2(p2_pos.first, p2_pos.second, 2);
+        Direction safeDir1 = getSafeDirection(side1);
+        Direction safeDir2 = getSafeDirection(side2);
+        Player player1(p1_pos.first, p1_pos.second, 1, safeDir1);
+        Player player2(p2_pos.first, p2_pos.second, 2, safeDir2);
 
-        player1.setDirection(getSafeDirection(side1));
-        player2.setDirection(getSafeDirection(side2));
+        player1.initializeTrail();
+        player2.initializeTrail();
 
         while (running)
         {
@@ -139,21 +144,20 @@ void Game::run()
     }
     else if (currentGameMode == VS_BOT)
     {
+        int side1 = rand() % 4;
+        int side2 = (side1 + 2) % 4;
         if (!gameBot)
         {
-            int side1 = rand() % 4;
-            int side2 = (side1 + 2) % 4;
-
             auto bot_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
-
-            gameBot = new Bot(bot_pos.first, bot_pos.second, 1);
-            gameBot->getPlayer()->setDirection(getSafeDirection(side2));
+            Direction safeDir2 = getSafeDirection(side2);
+            gameBot = new Bot(bot_pos.first, bot_pos.second, 1, safeDir2);
+            gameBot->getPlayer()->initializeTrail();
         }
 
-        int side1 = rand() % 4;
         auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
-        Player player(p1_pos.first, p1_pos.second, 1);
-        player.setDirection(getSafeDirection(side1));
+        Direction safeDir1 = getSafeDirection(side1);
+        Player player(p1_pos.first, p1_pos.second, 1, safeDir1);
+        player.initializeTrail();
 
         while (running)
         {
@@ -285,11 +289,15 @@ void Game::restart(Player &player)
 {
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
-    auto spawnPos = getRandomSpawnPosition(actualWidth, actualHeight);
+
+    int randomSide = rand() % 4;
+    auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
+    Direction safeDir = getSafeDirection(randomSide);
 
     startGame();
 
     player.reset(spawnPos.first, spawnPos.second);
+    player.setDirection(safeDir);
 }
 
 bool Game::checkTrailCollision(int x, int y, const Player &player)
@@ -408,7 +416,7 @@ std::pair<int, int> Game::getRandomSpawnPosition(int width, int height)
         seeded = true;
     }
 
-    int margin = 3;
+    int margin = 10;
     int x = margin + rand() % (width - 2 * margin);
     int y = margin + rand() % (height - 2 * margin);
 
@@ -422,7 +430,7 @@ void Game::setGameMode(GameMode mode)
 
 std::pair<int, int> Game::getRandomPositionOnSide(int side, int width, int height)
 {
-    int margin = 3;
+    int margin = 10;
     int x, y;
 
     switch (side)
@@ -651,12 +659,22 @@ void Game::restartTwoPlayer(Player &player1, Player &player2)
 {
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
-    auto spawnPositions = getTwoPlayerSpawnPositions(actualWidth, actualHeight);
+
+    int side1 = rand() % 4;
+    int side2 = (side1 + 2) % 4;
+
+    auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
+    auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
+
+    Direction safeDir1 = getSafeDirection(side1);
+    Direction safeDir2 = getSafeDirection(side2);
 
     startGame();
 
-    player1.reset(spawnPositions.first.first, spawnPositions.first.second);
-    player2.reset(spawnPositions.second.first, spawnPositions.second.second);
+    player1.reset(p1_pos.first, p1_pos.second);
+    player1.setDirection(safeDir1);
+    player2.reset(p2_pos.first, p2_pos.second);
+    player2.setDirection(safeDir2);
 
     winner = 0;
 }
@@ -754,7 +772,6 @@ void Game::renderVsBot(Player &player, Bot &bot)
         player.draw();
         bot.getPlayer()->draw();
 
-        // HUD
         attron(COLOR_PAIR(COLOR_HUD));
         mvprintw(0, 3, "╣ Player vs Bot ║ Time: %ds ╠", getGameTime());
         int bottomY = height - 1;
@@ -807,10 +824,15 @@ void Game::restartVsBot(Player &player, Bot &bot)
     auto p_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
     auto b_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
 
+    Direction safeDir1 = getSafeDirection(side1);
+    Direction safeDir2 = getSafeDirection(side2);
+
     startGame();
 
     player.reset(p_pos.first, p_pos.second);
+    player.setDirection(safeDir1);
     bot.reset(b_pos.first, b_pos.second);
+    bot.getPlayer()->setDirection(safeDir2);
 
     winner = 0;
 }

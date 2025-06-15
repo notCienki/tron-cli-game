@@ -71,10 +71,15 @@ const char *TrailSegment::getUnicodeChar() const
     return "┄";
 }
 
-Player::Player(int startX, int startY, int id)
+Player::Player(int startX, int startY, int id, Direction startDirection)
     : x(startX), y(startY), startX(startX), startY(startY),
-      direction(RIGHT), lastDirection(RIGHT), playerId(id)
+      direction(startDirection), lastDirection(startDirection), playerId(id)
 {
+}
+
+void Player::initializeTrail()
+{
+    trail.clear();
     trail.push_back(TrailSegment(x, y, direction, direction, true));
 }
 
@@ -109,6 +114,13 @@ void Player::move()
 
 void Player::setDirection(Direction newDir)
 {
+    if (trail.empty())
+    {
+        direction = newDir;
+        lastDirection = newDir;
+        return;
+    }
+
     if ((direction == UP && newDir == DOWN) ||
         (direction == DOWN && newDir == UP) ||
         (direction == LEFT && newDir == RIGHT) ||
@@ -222,8 +234,6 @@ void Player::reset(int newX, int newY)
         y = startY;
     }
 
-    direction = RIGHT;
-    lastDirection = RIGHT;
     trail.clear();
     trail.push_back(TrailSegment(x, y, direction, direction, true));
 }

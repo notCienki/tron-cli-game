@@ -2,9 +2,9 @@
 #include <random>
 #include <algorithm>
 
-Bot::Bot(int startX, int startY, int difficultyLevel) : difficulty(difficultyLevel)
+Bot::Bot(int startX, int startY, int difficultyLevel, Direction startDirection) : difficulty(difficultyLevel)
 {
-  botPlayer = new Player(startX, startY, 2);
+  botPlayer = new Player(startX, startY, 2, startDirection);
 }
 
 Bot::~Bot()
@@ -50,7 +50,7 @@ Direction Bot::calculateBestMove(const Player &opponent, int width, int height)
 
     if (isPositionSafe(nextX, nextY, opponent, width, height))
     {
-      return dir; // Return the first safe direction found
+      return dir;
     }
   }
   return RIGHT;
@@ -68,7 +68,7 @@ bool Bot::isPositionSafe(int x, int y, const Player &opponent, int width, int he
   {
     if (segment.x == x && segment.y == y)
     {
-      return false; // Position collides with own trail
+      return false;
     }
   }
 
@@ -77,10 +77,10 @@ bool Bot::isPositionSafe(int x, int y, const Player &opponent, int width, int he
   {
     if (segment.x == x && segment.y == y)
     {
-      return false; // Position collides with opponent's trail
+      return false;
     }
   }
-  return true; // Position is safe
+  return true;
 }
 
 Player *Bot::getPlayer() const

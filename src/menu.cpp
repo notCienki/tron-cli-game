@@ -419,7 +419,6 @@ void Menu::showSettingsMenu()
 
   attron(COLOR_PAIR(COLOR_MENU_TEXT));
 
-  // Game Speed
   if (selectedOption == 0)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -431,7 +430,6 @@ void Menu::showSettingsMenu()
     mvprintw(centerY - 1, centerX - 12, "║   Game Speed         ║");
   }
 
-  // Difficulty
   if (selectedOption == 1)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -443,7 +441,6 @@ void Menu::showSettingsMenu()
     mvprintw(centerY, centerX - 12, "║   Difficulty         ║");
   }
 
-  // Colors
   if (selectedOption == 2)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -455,7 +452,6 @@ void Menu::showSettingsMenu()
     mvprintw(centerY + 1, centerX - 12, "║   Colors             ║");
   }
 
-  // Back
   if (selectedOption == 3)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -487,7 +483,6 @@ void Menu::showGameSpeedMenu()
 
   attron(COLOR_PAIR(COLOR_MENU_TEXT));
 
-  // Slow
   if (selectedOption == 0)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -499,7 +494,6 @@ void Menu::showGameSpeedMenu()
     mvprintw(centerY - 1, centerX - 12, "║   Slow               ║");
   }
 
-  // Normal
   if (selectedOption == 1)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -511,7 +505,6 @@ void Menu::showGameSpeedMenu()
     mvprintw(centerY, centerX - 12, "║   Normal             ║");
   }
 
-  // Fast
   if (selectedOption == 2)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -523,7 +516,6 @@ void Menu::showGameSpeedMenu()
     mvprintw(centerY + 1, centerX - 12, "║   Fast               ║");
   }
 
-  // Back
   if (selectedOption == 3)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -554,7 +546,6 @@ void Menu::showDifficultyMenu()
 
   attron(COLOR_PAIR(COLOR_MENU_TEXT));
 
-  // Easy
   if (selectedOption == 0)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -566,7 +557,6 @@ void Menu::showDifficultyMenu()
     mvprintw(centerY - 1, centerX - 12, "║   Easy               ║");
   }
 
-  // Medium
   if (selectedOption == 1)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -578,7 +568,6 @@ void Menu::showDifficultyMenu()
     mvprintw(centerY, centerX - 12, "║   Medium             ║");
   }
 
-  // Hard
   if (selectedOption == 2)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -590,7 +579,6 @@ void Menu::showDifficultyMenu()
     mvprintw(centerY + 1, centerX - 12, "║   Hard               ║");
   }
 
-  // Back
   if (selectedOption == 3)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));
@@ -621,7 +609,6 @@ void Menu::showColorSchemeMenu()
 
   attron(COLOR_PAIR(COLOR_MENU_TEXT));
 
-  // Color Scheme options
   for (int i = 0; i < 3; ++i)
   {
     if (selectedOption == i)
@@ -636,7 +623,6 @@ void Menu::showColorSchemeMenu()
     }
   }
 
-  // Back
   if (selectedOption == 3)
   {
     attron(COLOR_PAIR(COLOR_MENU_SELECTED));

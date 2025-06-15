@@ -13,13 +13,13 @@ class Game
 private:
   int width, height;
   bool running;
-  GameState state; // Current game state
+  GameState state;
   GameSpeed currentGameSpeed;
   GameMode currentGameMode;
   int currentColorScheme;
   bool firstStart;
 
-  Bot *gameBot; // AI bot player
+  Bot *gameBot;
 
   std::chrono::steady_clock::time_point gameStartTime;
   std::chrono::steady_clock::time_point currentTime;
@@ -65,9 +65,9 @@ public:
   void gameOver();
   void restart(Player &player);
   void startGame();
-  void gameOverTwoPlayer(int winner); // 1=P1 wins, 2=P2 wins, 0=tie
+  void gameOverTwoPlayer(int winner);
   void restartTwoPlayer(Player &player1, Player &player2);
-  int winner; // Add to private section
+  int winner;
 
   void showWelcomeMessage();
   void renderHUD();

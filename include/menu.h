@@ -12,18 +12,15 @@ private:
   int selectedOption;
   int menuWidth, menuHeight;
 
-  // Menu options for different states
   std::vector<std::string> mainMenuOptions;
   std::vector<std::string> gameModeOptions;
   std::vector<std::string> settingsOptions;
 
-  // Current settings
   GameSpeed currentGameSpeed;
   GameDifficulty currentDifficulty;
   int currentColorScheme;
   GameMode currentGameMode;
 
-  // Color definitions
   static const int COLOR_MENU_BORDER = 11;
   static const int COLOR_MENU_TEXT = 12;
   static const int COLOR_MENU_SELECTED = 13;
@@ -41,7 +38,6 @@ public:
   void setState(MenuState newState);
   int getSelectedOption() const { return selectedOption; }
 
-  // Settings getters
   GameSpeed getGameSpeed() const { return currentGameSpeed; }
   GameDifficulty getDifficulty() const { return currentDifficulty; }
   int getColorScheme() const { return currentColorScheme; }

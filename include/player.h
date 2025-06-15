@@ -20,26 +20,27 @@ struct TrailSegment
 class Player
 {
 private:
-  int x, y;            // Player's position
-  int startX, startY;  // Starting position
-  Direction direction; // Current direction of movement
+  int x, y;
+  int startX, startY;
+  Direction direction;
   Direction lastDirection;
   std::vector<TrailSegment> trail;
   int playerId;
 
-  // Color constants for drawing
   static const int COLOR_PLAYER_HEAD = 1;
   static const int COLOR_PLAYER_TRAIL = 2;
   static const int COLOR_PLAYER2_HEAD = 9;
   static const int COLOR_PLAYER2_TRAIL = 10;
 
 public:
-  Player(int startX, int startY, int id = 1);
+  Player(int startX, int startY, int id = 1, Direction startDirection = RIGHT);
 
   void move();
   void setDirection(Direction newDir);
   void draw();
   void reset(int newX = -1, int newY = -1);
+
+  void initializeTrail();
 
   char getPlayerChar() const;
   const char *getPlayerUnicodeChar() const;

@@ -7,7 +7,6 @@ enum GameState
   PAUSED
 };
 
-// Common game types and enums
 enum GameMode
 {
   SINGLE_PLAYER = 0,
@@ -24,12 +23,11 @@ enum GameDifficulty
 
 enum GameSpeed
 {
-  SLOW = 150000,   // 150ms
-  NORMAL = 100000, // 100ms
-  FAST = 50000     // 50ms
+  SLOW = 150000,
+  NORMAL = 100000,
+  FAST = 50000
 };
 
-// Application states
 enum AppState
 {
   STATE_MENU,
