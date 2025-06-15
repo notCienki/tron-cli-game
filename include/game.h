@@ -1,12 +1,14 @@
 #pragma once
 
-#include "player.h"
-#include "bot.h"
+#include "entities/player.h"
+#include "entities/bot.h"
 #include <ncurses.h>
 #include <chrono>
 #include <locale.h>
 #include <vector>
-#include "types.h"
+#include "core/types.h"
+#include "managers/InputManager.h"
+#include <memory>
 
 class Game
 {
@@ -40,6 +42,8 @@ private:
   std::pair<int, int> getRandomPositionOnSide(int side, int width, int height);
 
   Direction getSafeDirection(int side);
+
+  std::unique_ptr<InputManager> inputManager;
 
 public:
   Game(int w, int h);

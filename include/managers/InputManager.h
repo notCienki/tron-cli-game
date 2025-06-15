@@ -1,5 +1,6 @@
 #pragma once
 #include <queue>
+#include "../core/types.h"
 
 class InputManager
 {
@@ -14,4 +15,9 @@ public:
 
   static bool isMovementKey(int key);
   static bool isActionKey(int key);
+
+  Direction keyToDirection(int key);
+
+  static bool isPlayer1Key(int key);
+  static bool isPlayer2Key(int key);
 };

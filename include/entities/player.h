@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <utility>
-#include "types.h"
+#include "../core/types.h"
 
 struct TrailSegment
 {

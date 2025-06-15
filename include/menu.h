@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include <vector>
 #include <string>
-#include "types.h"
+#include "core/types.h"
 
 class Menu
 {

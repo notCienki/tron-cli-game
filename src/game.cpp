@@ -1,4 +1,4 @@
-#include "../include/game.h"
+#include "../include/Game.h"
 #include "../include/entities/player.h"
 #include "../include/core/GameConfig.h"
 #include <unistd.h>
@@ -6,7 +6,7 @@
 #include <random>
 #include <ctime>
 
-Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0), firstStart(true), gameBot(nullptr), score(0), winner(0) {}
+Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0), firstStart(true), gameBot(nullptr), score(0), winner(0), inputManager(std::make_unique<InputManager>()) {}
 
 Game::~Game()
 {
@@ -172,37 +172,30 @@ void Game::run()
 
 void Game::handleInput(Player &player)
 {
-    int ch = getch();
-    switch (ch)
+    inputManager->pollInput();
+
+    while (inputManager->hasInput())
     {
-    case KEY_UP:
-        if (state == PLAYING)
-            player.setDirection(UP);
-        break;
-    case KEY_DOWN:
-        if (state == PLAYING)
-            player.setDirection(DOWN);
-        break;
-    case KEY_LEFT:
-        if (state == PLAYING)
-            player.setDirection(LEFT);
-        break;
-    case KEY_RIGHT:
-        if (state == PLAYING)
-            player.setDirection(RIGHT);
-        break;
-    case 'r':
-    case 'R':
-        if (state == GAME_OVER)
+        int key = inputManager->getNextInput();
+
+        if (InputManager::isMovementKey(key) && state == PLAYING)
         {
-            restart(player);
+            if (InputManager::isPlayer1Key(key))
+            {
+                player.setDirection(inputManager->keyToDirection(key));
+            }
         }
-        break;
-    case 'q':
-    case 'Q':
-    case 27:
-        stop();
-        break;
+        else if (InputManager::isActionKey(key))
+        {
+            if (key == 'r' || key == 'R')
+            {
+                restart(player);
+            }
+            else if (key == 'q' || key == 'Q' || key == 27) // 27 is ESC key
+            {
+                stop();
+            }
+        }
     }
 }
 

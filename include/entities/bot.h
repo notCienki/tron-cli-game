@@ -1,7 +1,7 @@
 #pragma once
 
 #include "player.h"
-#include "types.h"
+#include "../core/types.h"
 #include <vector>
 
 class Bot
