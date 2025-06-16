@@ -41,11 +41,7 @@ void Game::startGame()
 
     if (firstStart)
     {
-        renderer->clear();
-        renderer->drawBorders();
-        renderer->drawWelcomeMessage();
-        renderer->refresh();
-        sleep(GameConfig::WELCOME_MESSAGE_DURATION_SEC);
+        renderer->showWelcome();
         firstStart = false;
     }
 }

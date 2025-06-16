@@ -209,3 +209,12 @@ void Renderer::renderGameScreen(GameState state, const std::vector<Player *> &pl
 
   refresh();
 }
+
+void Renderer::showWelcome()
+{
+  clear();
+  drawBorders();
+  drawWelcomeMessage();
+  refresh();
+  sleep(GameConfig::WELCOME_MESSAGE_DURATION_SEC);
+}

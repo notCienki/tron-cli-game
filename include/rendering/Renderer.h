@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <unistd.h>
 #include "../core/types.h"
 #include "../core/GameConfig.h"
 
@@ -45,6 +46,8 @@ public:
   void updateScreenSize();
   int getScreenWidth() const { return screenWidth; }
   int getScreenHeight() const { return screenHeight; }
+
+  void showWelcome();
 
   void renderGameScreen(GameState state, const std::vector<Player *> &players,
                         const std::string &mode, int score, int time, int winner = 0);
