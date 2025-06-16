@@ -9,6 +9,7 @@
 #include "core/types.h"
 #include "managers/InputManager.h"
 #include <memory>
+#include "rendering/Renderer.h"
 
 class Game
 {
@@ -27,15 +28,6 @@ private:
   std::chrono::steady_clock::time_point currentTime;
   int score;
 
-  static const int COLOR_PLAYER_HEAD = 1;
-  static const int COLOR_PLAYER_TRAIL = 2;
-  static const int COLOR_BORDERS = 3;
-  static const int COLOR_GAME_OVER = 4;
-  static const int COLOR_HUD = 5;
-  static const int COLOR_MESSAGES = 6;
-  static const int COLOR_PLAYER2_HEAD = 9;
-  static const int COLOR_PLAYER2_TRAIL = 10;
-
   void initColors();
   std::pair<int, int> getRandomSpawnPosition(int width, int height);
   std::pair<std::pair<int, int>, std::pair<int, int>> getTwoPlayerSpawnPositions(int width, int height);
@@ -44,6 +36,8 @@ private:
   Direction getSafeDirection(int side);
 
   std::unique_ptr<InputManager> inputManager;
+  std::shared_ptr<Renderer> renderer;
+  std::shared_ptr<GameConfig> gameConfig;
 
 public:
   Game(int w, int h);
@@ -73,16 +67,10 @@ public:
   void restartTwoPlayer(Player &player1, Player &player2);
   int winner;
 
-  void showWelcomeMessage();
-  void renderHUD();
-
-  void drawBorders();
-
   void updateScore();
   int getScore() const;
   int getGameTime() const;
   void setGameSpeed(GameSpeed speed);
-  void setColorScheme(int scheme);
   void setGameMode(GameMode mode);
 
   bool isRunning() const { return running; }

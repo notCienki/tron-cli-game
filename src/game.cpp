@@ -6,7 +6,14 @@
 #include <random>
 #include <ctime>
 
-Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0), firstStart(true), gameBot(nullptr), score(0), winner(0), inputManager(std::make_unique<InputManager>()) {}
+Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING),
+                           currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0),
+                           firstStart(true), gameBot(nullptr), score(0), winner(0),
+                           inputManager(std::make_unique<InputManager>()),
+                           gameConfig(std::make_shared<GameConfig>()),
+                           renderer(std::make_shared<Renderer>(gameConfig))
+{
+}
 
 Game::~Game()
 {
@@ -15,18 +22,6 @@ Game::~Game()
 
 void Game::init()
 {
-    setlocale(LC_ALL, "");
-
-    printf("\033[?1049h\033[H");
-    fflush(stdout);
-
-    initscr();
-    noecho();
-    curs_set(0);
-    keypad(stdscr, TRUE);
-    nodelay(stdscr, TRUE);
-    raw();
-    scrollok(stdscr, FALSE);
 
     initColors();
 
@@ -46,28 +41,13 @@ void Game::startGame()
 
     if (firstStart)
     {
-        showWelcomeMessage();
+        renderer->clear();
+        renderer->drawBorders();
+        renderer->drawWelcomeMessage();
+        renderer->refresh();
+        sleep(GameConfig::WELCOME_MESSAGE_DURATION_SEC);
         firstStart = false;
     }
-}
-
-void Game::showWelcomeMessage()
-{
-    clear();
-    drawBorders();
-
-    int centerX = width / 2;
-    int centerY = height / 2;
-
-    mvprintw(centerY - 3, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "╔══════════════════════╗");
-    mvprintw(centerY - 2, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "║      TRON GAME       ║");
-    mvprintw(centerY - 1, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "╠══════════════════════╣");
-    mvprintw(centerY, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "║   Use ⇠⇡⇢⇣ to move   ║");
-    mvprintw(centerY + 1, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "║ Avoid walls & trails ║");
-    mvprintw(centerY + 2, centerX - GameConfig::WELCOME_BOX_HALF_WIDTH, "╚══════════════════════╝");
-
-    refresh();
-    sleep(GameConfig::WELCOME_MESSAGE_DURATION_SEC);
 }
 
 void Game::updateScore()
@@ -226,39 +206,8 @@ void Game::update(Player &player)
 
 void Game::render(Player &player)
 {
-    clear();
-
-    drawBorders();
-    if (state == PLAYING)
-    {
-        player.draw();
-
-        attron(COLOR_PAIR(COLOR_HUD));
-        mvprintw(0, 3, "╣ Score: %d ║ Time: %ds ╠", score, getGameTime());
-        int bottomY = height - 1;
-        mvprintw(bottomY, 3, "╣ ⇠⇡⇢⇣ Move ║ Q Quit ║ R Restart ╠");
-        attroff(COLOR_PAIR(COLOR_HUD));
-    }
-    else if (state == GAME_OVER)
-    {
-        int centerX = width / 2;
-        int centerY = height / 2;
-
-        attron(COLOR_PAIR(COLOR_GAME_OVER));
-        mvprintw(centerY - 3, centerX - 12, "╔══════════════════════╗");
-        mvprintw(centerY - 2, centerX - 12, "║      GAME OVER!      ║");
-        mvprintw(centerY - 1, centerX - 12, "╠══════════════════════╣");
-        mvprintw(centerY, centerX - 12, "║ Score:%3d   Time:%2ds ║", score, getGameTime());
-        mvprintw(centerY + 1, centerX - 12, "╠══════════════════════╣");
-        attroff(COLOR_PAIR(COLOR_GAME_OVER));
-
-        attron(COLOR_PAIR(COLOR_MESSAGES));
-        mvprintw(centerY + 2, centerX - 12, "║   R-Restart  Q-Quit  ║");
-        mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-        attroff(COLOR_PAIR(COLOR_MESSAGES));
-    }
-
-    refresh();
+    std::vector<Player *> players = {&player};
+    renderer->renderGameScreen(state, players, "Single Player", score, getGameTime(), winner);
 }
 
 void Game::cleanup()
@@ -314,91 +263,14 @@ bool Game::checkTrailCollision(int x, int y, const Player &player)
     return false;
 }
 
-void Game::drawBorders()
-{
-    attron(COLOR_PAIR(COLOR_BORDERS));
-
-    mvprintw(0, 0, "╔");
-    for (int x = 1; x < width - 1; x++)
-    {
-        mvprintw(0, x, "═");
-    }
-    mvprintw(0, width - 1, "╗");
-
-    for (int y = 1; y < height - 1; y++)
-    {
-        mvprintw(y, 0, "║");
-        mvprintw(y, width - 1, "║");
-    }
-
-    mvprintw(height - 1, 0, "╚");
-    for (int x = 1; x < width - 1; x++)
-    {
-        mvprintw(height - 1, x, "═");
-    }
-    mvprintw(height - 1, width - 1, "╝");
-
-    attroff(COLOR_PAIR(COLOR_BORDERS));
-}
-
 int Game::getScore() const
 {
     return score;
 }
 
-void Game::initColors()
-{
-    if (has_colors())
-    {
-        start_color();
-        use_default_colors();
-
-        switch (currentColorScheme)
-        {
-        case 0:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_RED, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_YELLOW, -1);
-            init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
-            break;
-        case 1:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_MAGENTA, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_YELLOW, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_GREEN, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_CYAN, -1);
-            init_pair(COLOR_BORDERS, COLOR_RED, -1);
-            break;
-        case 2:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_GREEN, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_WHITE, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_YELLOW, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_MAGENTA, -1);
-            init_pair(COLOR_BORDERS, COLOR_GREEN, -1);
-            break;
-        default:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_RED, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_YELLOW, -1);
-            init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
-            break;
-        }
-        init_pair(COLOR_GAME_OVER, COLOR_RED, -1);
-        init_pair(COLOR_HUD, COLOR_YELLOW, -1);
-        init_pair(COLOR_MESSAGES, COLOR_MAGENTA, -1);
-    }
-}
-
 void Game::setGameSpeed(GameSpeed speed)
 {
     currentGameSpeed = speed;
-}
-
-void Game::setColorScheme(int scheme)
-{
-    currentColorScheme = scheme;
-    initColors();
 }
 
 std::pair<int, int> Game::getRandomSpawnPosition(int width, int height)
@@ -594,53 +466,8 @@ void Game::updateTwoPlayer(Player &player1, Player &player2)
 
 void Game::renderTwoPlayer(Player &player1, Player &player2)
 {
-    clear();
-    drawBorders();
-
-    if (state == PLAYING)
-    {
-        player1.draw();
-        player2.draw();
-
-        attron(COLOR_PAIR(COLOR_HUD));
-        mvprintw(0, 3, "╣ Player 1 vs Player 2 ║ Time: %ds ╠", getGameTime());
-        int bottomY = height - 1;
-        mvprintw(bottomY, 3, "╣ Arrows=P1 ║ WASD=P2 ║ Q=Quit ║ R=Restart ╠");
-        attroff(COLOR_PAIR(COLOR_HUD));
-    }
-    else if (state == GAME_OVER)
-    {
-        int centerX = width / 2;
-        int centerY = height / 2;
-
-        attron(COLOR_PAIR(COLOR_GAME_OVER));
-        mvprintw(centerY - 3, centerX - 15, "╔═══════════════════════════════╗");
-
-        if (winner == 1)
-        {
-            mvprintw(centerY - 2, centerX - 15, "║        PLAYER 1 WINS!         ║");
-        }
-        else if (winner == 2)
-        {
-            mvprintw(centerY - 2, centerX - 15, "║        PLAYER 2 WINS!         ║");
-        }
-        else
-        {
-            mvprintw(centerY - 2, centerX - 15, "║           TIE GAME!           ║");
-        }
-
-        mvprintw(centerY - 1, centerX - 15, "╠═══════════════════════════════╣");
-        mvprintw(centerY, centerX - 15, "║ Time: %2ds   ║  Score: %3d     ║", getGameTime(), score);
-        mvprintw(centerY + 1, centerX - 15, "╠═══════════════════════════════╣");
-        attroff(COLOR_PAIR(COLOR_GAME_OVER));
-
-        attron(COLOR_PAIR(COLOR_MESSAGES));
-        mvprintw(centerY + 2, centerX - 15, "║     R-Restart    Q-Quit       ║");
-        mvprintw(centerY + 3, centerX - 15, "╚═══════════════════════════════╝");
-        attroff(COLOR_PAIR(COLOR_MESSAGES));
-    }
-
-    refresh();
+    std::vector<Player *> players = {&player1, &player2};
+    renderer->renderGameScreen(state, players, "Two Player", score, getGameTime(), winner);
 }
 
 void Game::gameOverTwoPlayer(int winnerPlayer)
@@ -758,53 +585,8 @@ void Game::updateVsBot(Player &player, Bot &bot)
 
 void Game::renderVsBot(Player &player, Bot &bot)
 {
-    clear();
-    drawBorders();
-
-    if (state == PLAYING)
-    {
-        player.draw();
-        bot.getPlayer()->draw();
-
-        attron(COLOR_PAIR(COLOR_HUD));
-        mvprintw(0, 3, "╣ Player vs Bot ║ Time: %ds ╠", getGameTime());
-        int bottomY = height - 1;
-        mvprintw(bottomY, 3, "╣ Arrows=Move ║ Q=Quit ║ R=Restart ╠");
-        attroff(COLOR_PAIR(COLOR_HUD));
-    }
-    else if (state == GAME_OVER)
-    {
-        int centerX = width / 2;
-        int centerY = height / 2;
-
-        attron(COLOR_PAIR(COLOR_GAME_OVER));
-        mvprintw(centerY - 3, centerX - 15, "╔═══════════════════════════════╗");
-
-        if (winner == 1)
-        {
-            mvprintw(centerY - 2, centerX - 15, "║        PLAYER WINS!           ║");
-        }
-        else if (winner == 2)
-        {
-            mvprintw(centerY - 2, centerX - 15, "║         BOT WINS!             ║");
-        }
-        else
-        {
-            mvprintw(centerY - 2, centerX - 15, "║         TIE GAME!             ║");
-        }
-
-        mvprintw(centerY - 1, centerX - 15, "╠═══════════════════════════════╣");
-        mvprintw(centerY, centerX - 15, "║ Time: %2ds   ║  Score: %3d     ║", getGameTime(), score);
-        mvprintw(centerY + 1, centerX - 15, "╠═══════════════════════════════╣");
-        attroff(COLOR_PAIR(COLOR_GAME_OVER));
-
-        attron(COLOR_PAIR(COLOR_MESSAGES));
-        mvprintw(centerY + 2, centerX - 15, "║     R-Restart    Q-Quit       ║");
-        mvprintw(centerY + 3, centerX - 15, "╚═══════════════════════════════╝");
-        attroff(COLOR_PAIR(COLOR_MESSAGES));
-    }
-
-    refresh();
+    std::vector<Player *> players = {&player, bot.getPlayer()};
+    renderer->renderGameScreen(state, players, "vs Bot", score, getGameTime(), winner);
 }
 
 void Game::restartVsBot(Player &player, Bot &bot)
