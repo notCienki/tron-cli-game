@@ -75,5 +75,5 @@ public:
 
   bool isRunning() const { return running; }
   void stop() { running = false; }
-  GameState getState() const { return state; }
+  PlayState getState() const { return state; }
 };

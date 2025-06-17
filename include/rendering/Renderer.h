@@ -49,6 +49,6 @@ public:
 
   void showWelcome();
 
-  void renderGameScreen(GameState state, const std::vector<Player *> &players,
+  void renderGameScreen(PlayState state, const std::vector<Player *> &players,
                         const std::string &mode, int score, int time, int winner = 0);
 };

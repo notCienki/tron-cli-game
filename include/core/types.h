@@ -1,6 +1,6 @@
 #pragma once
 
-enum GameState
+enum PlayState
 {
   PLAYING,
   GAME_OVER,

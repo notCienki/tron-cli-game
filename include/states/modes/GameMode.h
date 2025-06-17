@@ -21,7 +21,7 @@ public:
   explicit GameModeStrategy(std::shared_ptr<GameConfig> config);
   virtual ~GameModeStrategy() = default;
 
-  virtual void handleInput(InputManager &inputManager, GameState currentState) = 0;
+  virtual void handleInput(InputManager &inputManager, PlayState currentState) = 0;
   virtual void update() = 0;
   virtual std::string getModeName() const = 0;
 

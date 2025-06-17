@@ -11,7 +11,7 @@ private:
 public:
   explicit SinglePlayerMode(std::shared_ptr<GameConfig> config);
 
-  void handleInput(InputManager &inputManager, GameState currentState) override;
+  void handleInput(InputManager &inputManager, PlayState currentState) override;
   void update() override;
   std::string getModeName() const override { return "Single Player"; }
   void reset() override;

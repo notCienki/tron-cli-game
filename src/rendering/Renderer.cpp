@@ -190,7 +190,7 @@ void Renderer::drawGameOverScreen(int winner, int score, int time, const std::st
   attroff(COLOR_PAIR(COLOR_MESSAGES));
 }
 
-void Renderer::renderGameScreen(GameState state, const std::vector<Player *> &players,
+void Renderer::renderGameScreen(PlayState state, const std::vector<Player *> &players,
                                 const std::string &mode, int score, int time, int winner)
 {
   clear();

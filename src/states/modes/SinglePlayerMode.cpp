@@ -40,7 +40,7 @@ void SinglePlayerMode::initializePlayers()
   gameFinished = false;
 }
 
-void SinglePlayerMode::handleInput(InputManager &inputManager, GameState currentState)
+void SinglePlayerMode::handleInput(InputManager &inputManager, PlayState currentState)
 {
   inputManager.pollInput();
 
