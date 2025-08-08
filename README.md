@@ -76,19 +76,3 @@ echo 'export LC_ALL=en_US.UTF-8' >> ~/.zshrc
 # Use Homebrew ncurses paths
 g++ -std=c++17 -I$(brew --prefix ncurses)/include -L$(brew --prefix ncurses)/lib -o tron src/*.cpp -lncurses
 ```
-
-## Learning Goals
-
-- Object-Oriented Programming in C++
-- Game loops and real-time input handling
-- Terminal programming with ncurses
-- Proper project organization
-
-
-## 🤝 Contributing
-
-Bug fixes, features, and improvements welcome! Fork, code, and PR.
-
----
-
-*Built with ❤️ and caffeine during boring lectures*
