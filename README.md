@@ -1,4 +1,4 @@
-# 🏍️ Tron CLI Game
+# Tron CLI Game
 
 A terminal-based Tron light cycle game built with C++ and ncurses.
 
