@@ -58,21 +58,3 @@ tron-cli/
 ├── Makefile (not implemented yet)     # Build config
 └── README.md
 ```
-
-## Troubleshooting
-
-**Weird characters instead of borders?**
-```bash
-# Set UTF-8 locale
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-
-# Or add to your shell profile (~/.zshrc, ~/.bashrc)
-echo 'export LC_ALL=en_US.UTF-8' >> ~/.zshrc
-```
-
-**Compilation errors on macOS?**
-```bash
-# Use Homebrew ncurses paths
-g++ -std=c++17 -I$(brew --prefix ncurses)/include -L$(brew --prefix ncurses)/lib -o tron src/*.cpp -lncurses
-```
