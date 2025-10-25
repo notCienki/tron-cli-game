@@ -23,7 +23,7 @@ export LANG=en_US.UTF-8
 **Linux :**
 ```bash
 # Install ncurses development package
-sudo apt-get install libncurses5-dev
+sudo apt-get install libncurses5-dev libncurses-dev
 
 # Install UTF-8 locales
 sudo apt-get install locales
@@ -33,10 +33,34 @@ sudo locale-gen en_US.UTF-8
 ### Build & Run
 
 ```bash
+# Clone the repository
 git clone https://github.com/notCienki/tron-cli-game
-cd tron-cli
-g++ -std=c++17 -Wall -g -o tron src/main.cpp src/game.cpp src/player.cpp -lncurses
+cd tron-cli-game
+
+# Build and run using Makefile
+make
 ./tron
+
+# Or build and run in one command
+make run
+```
+
+**Installation (optional):**
+```bash
+# Install to /usr/local/bin
+sudo make install
+
+# Or install to custom location
+make install PREFIX=~/.local
+
+# Then run from anywhere
+tron
+```
+
+**Other commands:**
+```bash
+make clean      # Remove build files
+make help       # Show all available commands
 ```
 ## Controls
 
@@ -48,8 +72,9 @@ g++ -std=c++17 -Wall -g -o tron src/main.cpp src/game.cpp src/player.cpp -lncurs
 
 ```
 tron-cli/
-├── include/     # Headers (game.h, player.h)
-├── src/         # Source files
-├── Makefile (not implemented yet)     # Build config
-└── README.md
+├── include/     # Header files (game.h, player.h, bot.h, menu.h, types.h)
+├── src/         # Source files (.cpp)
+├── Makefile     # Build configuration
+├── LICENSE      # MIT License
+└── README.md    # This file
 ```

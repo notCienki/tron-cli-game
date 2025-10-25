@@ -1,8 +1,35 @@
+# Build artifacts
+obj/
 *.o
+*.a
+*.so
+*.dylib
 *.out
+
+# Executable
 tron
-.DS_Store
-todolist.md
-tron.dSYM/
-tron.dSYM/Contents/
+
+# Debug symbols
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Editor and IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+vgcore.*
+
+
+TODO.md
