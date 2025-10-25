@@ -20,7 +20,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 ```
 
-**Linux (Ubuntu/Debian):**
+**Linux :**
 ```bash
 # Install ncurses development package
 sudo apt-get install libncurses5-dev
@@ -28,11 +28,6 @@ sudo apt-get install libncurses5-dev
 # Install UTF-8 locales
 sudo apt-get install locales
 sudo locale-gen en_US.UTF-8
-```
-
-**Linux (Arch/Manjaro):**
-```bash
-sudo pacman -S ncurses
 ```
 
 ### Build & Run
