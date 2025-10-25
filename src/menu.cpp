@@ -36,10 +36,10 @@ void Menu::initColors()
     start_color();
     use_default_colors();
 
-    init_pair(COLOR_MENU_BORDER, COLOR_CYAN, -1);
-    init_pair(COLOR_MENU_TEXT, COLOR_WHITE, -1);
-    init_pair(COLOR_MENU_SELECTED, COLOR_YELLOW, -1);
-    init_pair(COLOR_MENU_TITLE, COLOR_GREEN, -1);
+    init_pair(Config::COLOR_MENU_BORDER, COLOR_CYAN, -1);
+    init_pair(Config::COLOR_MENU_TEXT, COLOR_WHITE, -1);
+    init_pair(Config::COLOR_MENU_SELECTED, COLOR_YELLOW, -1);
+    init_pair(Config::COLOR_MENU_TITLE, COLOR_GREEN, -1);
   }
 }
 
@@ -86,60 +86,60 @@ void Menu::showMainMenu()
   int centerX = termWidth / 2;
   int centerY = termHeight / 2;
 
-  attron(COLOR_PAIR(COLOR_MENU_TITLE));
-  mvprintw(centerY - 4, centerX - 12, "╔══════════════════════╗");
-  mvprintw(centerY - 3, centerX - 12, "║      TRON GAME       ║");
-  mvprintw(centerY - 2, centerX - 12, "╠══════════════════════╣");
-  attroff(COLOR_PAIR(COLOR_MENU_TITLE));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TITLE));
+  mvprintw(centerY - 4, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+  mvprintw(centerY - 3, centerX - Config::MENU_BOX_HALF_WIDTH, "║      TRON GAME       ║");
+  mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TITLE));
 
-  attron(COLOR_PAIR(COLOR_MENU_TEXT));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 
   if (selectedOption == 0)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY - 1, centerX - 12, "║ > Start Game         ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Start Game         ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY - 1, centerX - 12, "║   Start Game         ║");
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Start Game         ║");
   }
 
   if (selectedOption == 1)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - 12, "║ > Game Mode          ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Game Mode          ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY, centerX - 12, "║   Game Mode          ║");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Game Mode          ║");
   }
 
   if (selectedOption == 2)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - 12, "║ > Settings           ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Settings           ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 1, centerX - 12, "║   Settings           ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Settings           ║");
   }
 
   if (selectedOption == 3)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - 12, "║ > Quit               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Quit               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 2, centerX - 12, "║   Quit               ║");
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Quit               ║");
   }
 
-  mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-  attroff(COLOR_PAIR(COLOR_MENU_TEXT));
+  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 }
 
 bool Menu::handleInput()
@@ -347,60 +347,60 @@ void Menu::showGameModeMenu()
   int centerX = termWidth / 2;
   int centerY = termHeight / 2;
 
-  attron(COLOR_PAIR(COLOR_MENU_TITLE));
-  mvprintw(centerY - 4, centerX - 12, "╔══════════════════════╗");
-  mvprintw(centerY - 3, centerX - 12, "║    GAME MODE MENU    ║");
-  mvprintw(centerY - 2, centerX - 12, "╠══════════════════════╣");
-  attroff(COLOR_PAIR(COLOR_MENU_TITLE));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TITLE));
+  mvprintw(centerY - 4, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+  mvprintw(centerY - 3, centerX - Config::MENU_BOX_HALF_WIDTH, "║    GAME MODE MENU    ║");
+  mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TITLE));
 
-  attron(COLOR_PAIR(COLOR_MENU_TEXT));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 
   if (selectedOption == 0)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY - 1, centerX - 12, "║ > Single Player      ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Single Player      ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY - 1, centerX - 12, "║   Single Player      ║");
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Single Player      ║");
   }
 
   if (selectedOption == 1)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - 12, "║ > Two Player         ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Two Player         ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY, centerX - 12, "║   Two Player         ║");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Two Player         ║");
   }
 
   if (selectedOption == 2)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - 12, "║ > vs Bot             ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > vs Bot             ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 1, centerX - 12, "║   vs Bot             ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   vs Bot             ║");
   }
 
   if (selectedOption == 3)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - 12, "║ > Back               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 2, centerX - 12, "║   Back               ║");
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
   }
 
-  mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-  attroff(COLOR_PAIR(COLOR_MENU_TEXT));
+  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 }
 
 void Menu::showSettingsMenu()
@@ -411,60 +411,60 @@ void Menu::showSettingsMenu()
   int centerX = termWidth / 2;
   int centerY = termHeight / 2;
 
-  attron(COLOR_PAIR(COLOR_MENU_TITLE));
-  mvprintw(centerY - 4, centerX - 12, "╔══════════════════════╗");
-  mvprintw(centerY - 3, centerX - 12, "║     SETTINGS MENU    ║");
-  mvprintw(centerY - 2, centerX - 12, "╠══════════════════════╣");
-  attroff(COLOR_PAIR(COLOR_MENU_TITLE));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TITLE));
+  mvprintw(centerY - 4, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+  mvprintw(centerY - 3, centerX - Config::MENU_BOX_HALF_WIDTH, "║     SETTINGS MENU    ║");
+  mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TITLE));
 
-  attron(COLOR_PAIR(COLOR_MENU_TEXT));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 
   if (selectedOption == 0)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY - 1, centerX - 12, "║ > Game Speed         ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Game Speed         ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY - 1, centerX - 12, "║   Game Speed         ║");
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Game Speed         ║");
   }
 
   if (selectedOption == 1)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - 12, "║ > Difficulty         ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Difficulty         ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY, centerX - 12, "║   Difficulty         ║");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Difficulty         ║");
   }
 
   if (selectedOption == 2)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - 12, "║ > Colors             ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Colors             ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 1, centerX - 12, "║   Colors             ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Colors             ║");
   }
 
   if (selectedOption == 3)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - 12, "║ > Back               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 2, centerX - 12, "║   Back               ║");
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
   }
 
-  mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-  attroff(COLOR_PAIR(COLOR_MENU_TEXT));
+  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 }
 
 void Menu::showGameSpeedMenu()
@@ -475,59 +475,59 @@ void Menu::showGameSpeedMenu()
   int centerX = termWidth / 2;
   int centerY = termHeight / 2;
 
-  attron(COLOR_PAIR(COLOR_MENU_TITLE));
-  mvprintw(centerY - 4, centerX - 12, "╔══════════════════════╗");
-  mvprintw(centerY - 3, centerX - 12, "║     GAME SPEED       ║");
-  mvprintw(centerY - 2, centerX - 12, "╠══════════════════════╣");
-  attroff(COLOR_PAIR(COLOR_MENU_TITLE));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TITLE));
+  mvprintw(centerY - 4, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+  mvprintw(centerY - 3, centerX - Config::MENU_BOX_HALF_WIDTH, "║     GAME SPEED       ║");
+  mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TITLE));
 
-  attron(COLOR_PAIR(COLOR_MENU_TEXT));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 
   if (selectedOption == 0)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY - 1, centerX - 12, "║ > Slow               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Slow               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY - 1, centerX - 12, "║   Slow               ║");
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Slow               ║");
   }
 
   if (selectedOption == 1)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - 12, "║ > Normal             ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Normal             ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY, centerX - 12, "║   Normal             ║");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Normal             ║");
   }
 
   if (selectedOption == 2)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - 12, "║ > Fast               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Fast               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 1, centerX - 12, "║   Fast               ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Fast               ║");
   }
 
   if (selectedOption == 3)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - 12, "║ > Back               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 2, centerX - 12, "║   Back               ║");
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
   }
-  mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-  attroff(COLOR_PAIR(COLOR_MENU_TEXT));
+  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 }
 
 void Menu::showDifficultyMenu()
@@ -538,59 +538,59 @@ void Menu::showDifficultyMenu()
   int centerX = termWidth / 2;
   int centerY = termHeight / 2;
 
-  attron(COLOR_PAIR(COLOR_MENU_TITLE));
-  mvprintw(centerY - 4, centerX - 12, "╔══════════════════════╗");
-  mvprintw(centerY - 3, centerX - 12, "║     DIFFICULTY       ║");
-  mvprintw(centerY - 2, centerX - 12, "╠══════════════════════╣");
-  attroff(COLOR_PAIR(COLOR_MENU_TITLE));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TITLE));
+  mvprintw(centerY - 4, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+  mvprintw(centerY - 3, centerX - Config::MENU_BOX_HALF_WIDTH, "║     DIFFICULTY       ║");
+  mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TITLE));
 
-  attron(COLOR_PAIR(COLOR_MENU_TEXT));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 
   if (selectedOption == 0)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY - 1, centerX - 12, "║ > Easy               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Easy               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY - 1, centerX - 12, "║   Easy               ║");
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Easy               ║");
   }
 
   if (selectedOption == 1)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - 12, "║ > Medium             ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Medium             ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY, centerX - 12, "║   Medium             ║");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Medium             ║");
   }
 
   if (selectedOption == 2)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - 12, "║ > Hard               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Hard               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 1, centerX - 12, "║   Hard               ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Hard               ║");
   }
 
   if (selectedOption == 3)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - 12, "║ > Back               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 2, centerX - 12, "║   Back               ║");
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
   }
-  mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-  attroff(COLOR_PAIR(COLOR_MENU_TEXT));
+  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 }
 
 void Menu::showColorSchemeMenu()
@@ -601,39 +601,39 @@ void Menu::showColorSchemeMenu()
   int centerX = termWidth / 2;
   int centerY = termHeight / 2;
 
-  attron(COLOR_PAIR(COLOR_MENU_TITLE));
-  mvprintw(centerY - 4, centerX - 12, "╔══════════════════════╗");
-  mvprintw(centerY - 3, centerX - 12, "║     COLOR SCHEME     ║");
-  mvprintw(centerY - 2, centerX - 12, "╠══════════════════════╣");
-  attroff(COLOR_PAIR(COLOR_MENU_TITLE));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TITLE));
+  mvprintw(centerY - 4, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+  mvprintw(centerY - 3, centerX - Config::MENU_BOX_HALF_WIDTH, "║     COLOR SCHEME     ║");
+  mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TITLE));
 
-  attron(COLOR_PAIR(COLOR_MENU_TEXT));
+  attron(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 
   for (int i = 0; i < 3; ++i)
   {
     if (selectedOption == i)
     {
-      attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-      mvprintw(centerY - 1 + i, centerX - 12, "║ > Color Scheme %d     ║", i + 1);
-      attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+      attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+      mvprintw(centerY - 1 + i, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Color Scheme %d     ║", i + 1);
+      attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
     }
     else
     {
-      mvprintw(centerY - 1 + i, centerX - 12, "║   Color Scheme %d     ║", i + 1);
+      mvprintw(centerY - 1 + i, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Color Scheme %d     ║", i + 1);
     }
   }
 
   if (selectedOption == 3)
   {
-    attron(COLOR_PAIR(COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - 12, "║ > Back               ║");
-    attroff(COLOR_PAIR(COLOR_MENU_SELECTED));
+    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
+    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 2, centerX - 12, "║   Back               ║");
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
   }
 
-  mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-  attroff(COLOR_PAIR(COLOR_MENU_TEXT));
+  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+  attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 }

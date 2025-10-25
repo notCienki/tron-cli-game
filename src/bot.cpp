@@ -4,7 +4,7 @@
 
 Bot::Bot(int startX, int startY, int difficultyLevel, Direction startDirection) : difficulty(difficultyLevel)
 {
-  botPlayer = new Player(startX, startY, 2, startDirection);
+  botPlayer = new Player(startX, startY, Config::PLAYER_2_ID, startDirection);
 }
 
 Bot::~Bot()
@@ -26,7 +26,7 @@ Direction Bot::calculateBestMove(const Player &opponent, int width, int height)
   int currentX = botPlayer->getX();
   int currentY = botPlayer->getY();
 
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < Config::NUM_SIDES; i++)
   {
     Direction dir = directions[i];
     int nextX = currentX;

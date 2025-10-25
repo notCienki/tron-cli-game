@@ -5,7 +5,7 @@
 #include <random>
 #include <ctime>
 
-Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0), firstStart(true), gameBot(nullptr), score(0), winner(0) {}
+Game::Game(int w, int h) : width(w), height(h), running(false), state(PLAYING), currentGameSpeed(NORMAL), currentGameMode(SINGLE_PLAYER), currentColorScheme(0), firstStart(true), gameBot(nullptr), score(0), winner(Config::WINNER_TIE) {}
 
 Game::~Game()
 {
@@ -58,15 +58,15 @@ void Game::showWelcomeMessage()
     int centerX = width / 2;
     int centerY = height / 2;
 
-    mvprintw(centerY - 3, centerX - 12, "╔══════════════════════╗");
-    mvprintw(centerY - 2, centerX - 12, "║      TRON GAME       ║");
-    mvprintw(centerY - 1, centerX - 12, "╠══════════════════════╣");
-    mvprintw(centerY, centerX - 12, "║   Use ⇠⇡⇢⇣ to move   ║");
-    mvprintw(centerY + 1, centerX - 12, "║ Avoid walls & trails ║");
-    mvprintw(centerY + 2, centerX - 12, "╚══════════════════════╝");
+    mvprintw(centerY - Config::WELCOME_BOX_VERTICAL_OFFSET, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+    mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║      TRON GAME       ║");
+    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Use ⇠⇡⇢⇣ to move   ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ Avoid walls & trails ║");
+    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
 
     refresh();
-    sleep(2);
+    sleep(Config::WELCOME_MESSAGE_DELAY_SEC);
 }
 
 void Game::updateScore()
@@ -104,10 +104,10 @@ void Game::run()
 
     if (currentGameMode == SINGLE_PLAYER)
     {
-        int randomSide = rand() % 4;
+        int randomSide = rand() % Config::NUM_SIDES;
         auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
         Direction safeDir = getSafeDirection(randomSide);
-        Player player(spawnPos.first, spawnPos.second, 1, safeDir);
+        Player player(spawnPos.first, spawnPos.second, Config::PLAYER_1_ID, safeDir);
         player.initializeTrail();
 
         while (running)
@@ -120,16 +120,16 @@ void Game::run()
     }
     else if (currentGameMode == TWO_PLAYER)
     {
-        int side1 = rand() % 4;
-        int side2 = (side1 + 2) % 4;
+        int side1 = rand() % Config::NUM_SIDES;
+        int side2 = (side1 + 2) % Config::NUM_SIDES;
 
         auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
         auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
 
         Direction safeDir1 = getSafeDirection(side1);
         Direction safeDir2 = getSafeDirection(side2);
-        Player player1(p1_pos.first, p1_pos.second, 1, safeDir1);
-        Player player2(p2_pos.first, p2_pos.second, 2, safeDir2);
+        Player player1(p1_pos.first, p1_pos.second, Config::PLAYER_1_ID, safeDir1);
+        Player player2(p2_pos.first, p2_pos.second, Config::PLAYER_2_ID, safeDir2);
 
         player1.initializeTrail();
         player2.initializeTrail();
@@ -144,19 +144,19 @@ void Game::run()
     }
     else if (currentGameMode == VS_BOT)
     {
-        int side1 = rand() % 4;
-        int side2 = (side1 + 2) % 4;
+        int side1 = rand() % Config::NUM_SIDES;
+        int side2 = (side1 + 2) % Config::NUM_SIDES;
         if (!gameBot)
         {
             auto bot_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
             Direction safeDir2 = getSafeDirection(side2);
-            gameBot = new Bot(bot_pos.first, bot_pos.second, 1, safeDir2);
+            gameBot = new Bot(bot_pos.first, bot_pos.second, Config::DEFAULT_BOT_DIFFICULTY, safeDir2);
             gameBot->getPlayer()->initializeTrail();
         }
 
         auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
         Direction safeDir1 = getSafeDirection(side1);
-        Player player(p1_pos.first, p1_pos.second, 1, safeDir1);
+        Player player(p1_pos.first, p1_pos.second, Config::PLAYER_1_ID, safeDir1);
         player.initializeTrail();
 
         while (running)
@@ -239,29 +239,29 @@ void Game::render(Player &player)
     {
         player.draw();
 
-        attron(COLOR_PAIR(COLOR_HUD));
-        mvprintw(0, 3, "╣ Score: %d ║ Time: %ds ╠", score, getGameTime());
+        attron(COLOR_PAIR(Config::COLOR_HUD));
+        mvprintw(0, Config::HUD_HORIZONTAL_OFFSET, "╣ Score: %d ║ Time: %ds ╠", score, getGameTime());
         int bottomY = height - 1;
-        mvprintw(bottomY, 3, "╣ ⇠⇡⇢⇣ Move ║ Q Quit ║ R Restart ╠");
-        attroff(COLOR_PAIR(COLOR_HUD));
+        mvprintw(bottomY, Config::HUD_HORIZONTAL_OFFSET, "╣ ⇠⇡⇢⇣ Move ║ Q Quit ║ R Restart ╠");
+        attroff(COLOR_PAIR(Config::COLOR_HUD));
     }
     else if (state == GAME_OVER)
     {
         int centerX = width / 2;
         int centerY = height / 2;
 
-        attron(COLOR_PAIR(COLOR_GAME_OVER));
-        mvprintw(centerY - 3, centerX - 12, "╔══════════════════════╗");
-        mvprintw(centerY - 2, centerX - 12, "║      GAME OVER!      ║");
-        mvprintw(centerY - 1, centerX - 12, "╠══════════════════════╣");
-        mvprintw(centerY, centerX - 12, "║ Score:%3d   Time:%2ds ║", score, getGameTime());
-        mvprintw(centerY + 1, centerX - 12, "╠══════════════════════╣");
-        attroff(COLOR_PAIR(COLOR_GAME_OVER));
+        attron(COLOR_PAIR(Config::COLOR_GAME_OVER));
+        mvprintw(centerY - Config::GAMEOVER_BOX_VERTICAL_OFFSET, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
+        mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║      GAME OVER!      ║");
+        mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+        mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ Score:%3d   Time:%2ds ║", score, getGameTime());
+        mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
+        attroff(COLOR_PAIR(Config::COLOR_GAME_OVER));
 
-        attron(COLOR_PAIR(COLOR_MESSAGES));
-        mvprintw(centerY + 2, centerX - 12, "║   R-Restart  Q-Quit  ║");
-        mvprintw(centerY + 3, centerX - 12, "╚══════════════════════╝");
-        attroff(COLOR_PAIR(COLOR_MESSAGES));
+        attron(COLOR_PAIR(Config::COLOR_MESSAGES));
+        mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   R-Restart  Q-Quit  ║");
+        mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+        attroff(COLOR_PAIR(Config::COLOR_MESSAGES));
     }
 
     refresh();
@@ -290,7 +290,7 @@ void Game::restart(Player &player)
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
-    int randomSide = rand() % 4;
+    int randomSide = rand() % Config::NUM_SIDES;
     auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
     Direction safeDir = getSafeDirection(randomSide);
 
@@ -304,12 +304,12 @@ bool Game::checkTrailCollision(int x, int y, const Player &player)
 {
     const auto &trail = player.getTrail();
 
-    if (trail.size() <= 2)
+    if (trail.size() <= Config::COLLISION_TRAIL_MIN_LENGTH)
     {
         return false;
     }
 
-    for (size_t i = 0; i < trail.size() - 2; i++)
+    for (size_t i = 0; i < trail.size() - Config::COLLISION_TRAIL_MIN_LENGTH; i++)
     {
         if (trail[i].x == x && trail[i].y == y)
         {
@@ -322,7 +322,7 @@ bool Game::checkTrailCollision(int x, int y, const Player &player)
 
 void Game::drawBorders()
 {
-    attron(COLOR_PAIR(COLOR_BORDERS));
+    attron(COLOR_PAIR(Config::COLOR_BORDERS));
 
     mvprintw(0, 0, "╔");
     for (int x = 1; x < width - 1; x++)
@@ -344,7 +344,7 @@ void Game::drawBorders()
     }
     mvprintw(height - 1, width - 1, "╝");
 
-    attroff(COLOR_PAIR(COLOR_BORDERS));
+    attroff(COLOR_PAIR(Config::COLOR_BORDERS));
 }
 
 int Game::getScore() const
@@ -362,37 +362,37 @@ void Game::initColors()
         switch (currentColorScheme)
         {
         case 0:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_RED, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_YELLOW, -1);
-            init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
+            init_pair(Config::COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
+            init_pair(Config::COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
+            init_pair(Config::COLOR_PLAYER2_HEAD, COLOR_RED, -1);
+            init_pair(Config::COLOR_PLAYER2_TRAIL, COLOR_YELLOW, -1);
+            init_pair(Config::COLOR_BORDERS, COLOR_WHITE, -1);
             break;
         case 1:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_MAGENTA, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_YELLOW, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_GREEN, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_CYAN, -1);
-            init_pair(COLOR_BORDERS, COLOR_RED, -1);
+            init_pair(Config::COLOR_PLAYER_HEAD, COLOR_MAGENTA, -1);
+            init_pair(Config::COLOR_PLAYER_TRAIL, COLOR_YELLOW, -1);
+            init_pair(Config::COLOR_PLAYER2_HEAD, COLOR_GREEN, -1);
+            init_pair(Config::COLOR_PLAYER2_TRAIL, COLOR_CYAN, -1);
+            init_pair(Config::COLOR_BORDERS, COLOR_RED, -1);
             break;
         case 2:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_GREEN, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_WHITE, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_YELLOW, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_MAGENTA, -1);
-            init_pair(COLOR_BORDERS, COLOR_GREEN, -1);
+            init_pair(Config::COLOR_PLAYER_HEAD, COLOR_GREEN, -1);
+            init_pair(Config::COLOR_PLAYER_TRAIL, COLOR_WHITE, -1);
+            init_pair(Config::COLOR_PLAYER2_HEAD, COLOR_YELLOW, -1);
+            init_pair(Config::COLOR_PLAYER2_TRAIL, COLOR_MAGENTA, -1);
+            init_pair(Config::COLOR_BORDERS, COLOR_GREEN, -1);
             break;
         default:
-            init_pair(COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
-            init_pair(COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
-            init_pair(COLOR_PLAYER2_HEAD, COLOR_RED, -1);
-            init_pair(COLOR_PLAYER2_TRAIL, COLOR_YELLOW, -1);
-            init_pair(COLOR_BORDERS, COLOR_WHITE, -1);
+            init_pair(Config::COLOR_PLAYER_HEAD, COLOR_CYAN, -1);
+            init_pair(Config::COLOR_PLAYER_TRAIL, COLOR_BLUE, -1);
+            init_pair(Config::COLOR_PLAYER2_HEAD, COLOR_RED, -1);
+            init_pair(Config::COLOR_PLAYER2_TRAIL, COLOR_YELLOW, -1);
+            init_pair(Config::COLOR_BORDERS, COLOR_WHITE, -1);
             break;
         }
-        init_pair(COLOR_GAME_OVER, COLOR_RED, -1);
-        init_pair(COLOR_HUD, COLOR_YELLOW, -1);
-        init_pair(COLOR_MESSAGES, COLOR_MAGENTA, -1);
+        init_pair(Config::COLOR_GAME_OVER, COLOR_RED, -1);
+        init_pair(Config::COLOR_HUD, COLOR_YELLOW, -1);
+        init_pair(Config::COLOR_MESSAGES, COLOR_MAGENTA, -1);
     }
 }
 
@@ -416,9 +416,8 @@ std::pair<int, int> Game::getRandomSpawnPosition(int width, int height)
         seeded = true;
     }
 
-    int margin = 10;
-    int x = margin + rand() % (width - 2 * margin);
-    int y = margin + rand() % (height - 2 * margin);
+    int x = Config::SPAWN_MARGIN + rand() % (width - 2 * Config::SPAWN_MARGIN);
+    int y = Config::SPAWN_MARGIN + rand() % (height - 2 * Config::SPAWN_MARGIN);
 
     return std::make_pair(x, y);
 }
@@ -430,26 +429,25 @@ void Game::setGameMode(GameMode mode)
 
 std::pair<int, int> Game::getRandomPositionOnSide(int side, int width, int height)
 {
-    int margin = 10;
     int x, y;
 
     switch (side)
     {
-    case 0:
-        x = margin + rand() % (width - 2 * margin);
-        y = margin;
+    case Config::SIDE_TOP:
+        x = Config::SPAWN_MARGIN + rand() % (width - 2 * Config::SPAWN_MARGIN);
+        y = Config::SPAWN_MARGIN;
         break;
-    case 1:
-        x = width - margin;
-        y = margin + rand() % (height - 2 * margin);
+    case Config::SIDE_RIGHT:
+        x = width - Config::SPAWN_MARGIN;
+        y = Config::SPAWN_MARGIN + rand() % (height - 2 * Config::SPAWN_MARGIN);
         break;
-    case 2:
-        x = margin + rand() % (width - 2 * margin);
-        y = height - margin;
+    case Config::SIDE_BOTTOM:
+        x = Config::SPAWN_MARGIN + rand() % (width - 2 * Config::SPAWN_MARGIN);
+        y = height - Config::SPAWN_MARGIN;
         break;
-    case 3:
-        x = margin;
-        y = margin + rand() % (height - 2 * margin);
+    case Config::SIDE_LEFT:
+        x = Config::SPAWN_MARGIN;
+        y = Config::SPAWN_MARGIN + rand() % (height - 2 * Config::SPAWN_MARGIN);
         break;
     }
 
@@ -460,13 +458,13 @@ Direction Game::getSafeDirection(int side)
 {
     switch (side)
     {
-    case 0:
+    case Config::SIDE_TOP:
         return DOWN;
-    case 1:
+    case Config::SIDE_RIGHT:
         return LEFT;
-    case 2:
+    case Config::SIDE_BOTTOM:
         return UP;
-    case 3:
+    case Config::SIDE_LEFT:
         return RIGHT;
     default:
         return RIGHT;
@@ -482,8 +480,8 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Game::getTwoPlayerSpawnPosit
         seeded = true;
     }
 
-    int side1 = rand() % 4;
-    int side2 = (side1 + 2) % 4;
+    int side1 = rand() % Config::NUM_SIDES;
+    int side2 = (side1 + 2) % Config::NUM_SIDES;
 
     auto p1_pos = getRandomPositionOnSide(side1, width, height);
     auto p2_pos = getRandomPositionOnSide(side2, width, height);
@@ -577,19 +575,19 @@ void Game::updateTwoPlayer(Player &player1, Player &player2)
 
     if (headToHead)
     {
-        gameOverTwoPlayer(0);
+        gameOverTwoPlayer(Config::WINNER_TIE);
     }
     else if (p1_loses && p2_loses)
     {
-        gameOverTwoPlayer(0);
+        gameOverTwoPlayer(Config::WINNER_TIE);
     }
     else if (p1_loses)
     {
-        gameOverTwoPlayer(2);
+        gameOverTwoPlayer(Config::WINNER_PLAYER2);
     }
     else if (p2_loses)
     {
-        gameOverTwoPlayer(1);
+        gameOverTwoPlayer(Config::WINNER_PLAYER1);
     }
     else
     {
@@ -608,42 +606,42 @@ void Game::renderTwoPlayer(Player &player1, Player &player2)
         player1.draw();
         player2.draw();
 
-        attron(COLOR_PAIR(COLOR_HUD));
-        mvprintw(0, 3, "╣ Player 1 vs Player 2 ║ Time: %ds ╠", getGameTime());
+        attron(COLOR_PAIR(Config::COLOR_HUD));
+        mvprintw(0, Config::HUD_HORIZONTAL_OFFSET, "╣ Player 1 vs Player 2 ║ Time: %ds ╠", getGameTime());
         int bottomY = height - 1;
-        mvprintw(bottomY, 3, "╣ Arrows=P1 ║ WASD=P2 ║ Q=Quit ║ R=Restart ╠");
-        attroff(COLOR_PAIR(COLOR_HUD));
+        mvprintw(bottomY, Config::HUD_HORIZONTAL_OFFSET, "╣ Arrows=P1 ║ WASD=P2 ║ Q=Quit ║ R=Restart ╠");
+        attroff(COLOR_PAIR(Config::COLOR_HUD));
     }
     else if (state == GAME_OVER)
     {
         int centerX = width / 2;
         int centerY = height / 2;
 
-        attron(COLOR_PAIR(COLOR_GAME_OVER));
-        mvprintw(centerY - 3, centerX - 15, "╔═══════════════════════════════╗");
+        attron(COLOR_PAIR(Config::COLOR_GAME_OVER));
+        mvprintw(centerY - Config::GAMEOVER_BOX_VERTICAL_OFFSET, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╔═══════════════════════════════╗");
 
-        if (winner == 1)
+        if (winner == Config::WINNER_PLAYER1)
         {
-            mvprintw(centerY - 2, centerX - 15, "║        PLAYER 1 WINS!         ║");
+            mvprintw(centerY - 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║        PLAYER 1 WINS!         ║");
         }
-        else if (winner == 2)
+        else if (winner == Config::WINNER_PLAYER2)
         {
-            mvprintw(centerY - 2, centerX - 15, "║        PLAYER 2 WINS!         ║");
+            mvprintw(centerY - 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║        PLAYER 2 WINS!         ║");
         }
         else
         {
-            mvprintw(centerY - 2, centerX - 15, "║           TIE GAME!           ║");
+            mvprintw(centerY - 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║           TIE GAME!           ║");
         }
 
-        mvprintw(centerY - 1, centerX - 15, "╠═══════════════════════════════╣");
-        mvprintw(centerY, centerX - 15, "║ Time: %2ds   ║  Score: %3d     ║", getGameTime(), score);
-        mvprintw(centerY + 1, centerX - 15, "╠═══════════════════════════════╣");
-        attroff(COLOR_PAIR(COLOR_GAME_OVER));
+        mvprintw(centerY - 1, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╠═══════════════════════════════╣");
+        mvprintw(centerY, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║ Time: %2ds   ║  Score: %3d     ║", getGameTime(), score);
+        mvprintw(centerY + 1, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╠═══════════════════════════════╣");
+        attroff(COLOR_PAIR(Config::COLOR_GAME_OVER));
 
-        attron(COLOR_PAIR(COLOR_MESSAGES));
-        mvprintw(centerY + 2, centerX - 15, "║     R-Restart    Q-Quit       ║");
-        mvprintw(centerY + 3, centerX - 15, "╚═══════════════════════════════╝");
-        attroff(COLOR_PAIR(COLOR_MESSAGES));
+        attron(COLOR_PAIR(Config::COLOR_MESSAGES));
+        mvprintw(centerY + 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║     R-Restart    Q-Quit       ║");
+        mvprintw(centerY + 3, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╚═══════════════════════════════╝");
+        attroff(COLOR_PAIR(Config::COLOR_MESSAGES));
     }
 
     refresh();
@@ -660,8 +658,8 @@ void Game::restartTwoPlayer(Player &player1, Player &player2)
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
-    int side1 = rand() % 4;
-    int side2 = (side1 + 2) % 4;
+    int side1 = rand() % Config::NUM_SIDES;
+    int side2 = (side1 + 2) % Config::NUM_SIDES;
 
     auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
     auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
@@ -676,7 +674,7 @@ void Game::restartTwoPlayer(Player &player1, Player &player2)
     player2.reset(p2_pos.first, p2_pos.second);
     player2.setDirection(safeDir2);
 
-    winner = 0;
+    winner = Config::WINNER_TIE;
 }
 
 void Game::handleInputVsBot(Player &player, Bot &bot)
@@ -745,15 +743,15 @@ void Game::updateVsBot(Player &player, Bot &bot)
 
     if (headToHead || (p_loses && b_loses))
     {
-        gameOverTwoPlayer(0);
+        gameOverTwoPlayer(Config::WINNER_TIE);
     }
     else if (p_loses)
     {
-        gameOverTwoPlayer(2);
+        gameOverTwoPlayer(Config::WINNER_PLAYER2);
     }
     else if (b_loses)
     {
-        gameOverTwoPlayer(1);
+        gameOverTwoPlayer(Config::WINNER_PLAYER1);
     }
     else
     {
@@ -772,42 +770,42 @@ void Game::renderVsBot(Player &player, Bot &bot)
         player.draw();
         bot.getPlayer()->draw();
 
-        attron(COLOR_PAIR(COLOR_HUD));
-        mvprintw(0, 3, "╣ Player vs Bot ║ Time: %ds ╠", getGameTime());
+        attron(COLOR_PAIR(Config::COLOR_HUD));
+        mvprintw(0, Config::HUD_HORIZONTAL_OFFSET, "╣ Player vs Bot ║ Time: %ds ╠", getGameTime());
         int bottomY = height - 1;
-        mvprintw(bottomY, 3, "╣ Arrows=Move ║ Q=Quit ║ R=Restart ╠");
-        attroff(COLOR_PAIR(COLOR_HUD));
+        mvprintw(bottomY, Config::HUD_HORIZONTAL_OFFSET, "╣ Arrows=Move ║ Q=Quit ║ R=Restart ╠");
+        attroff(COLOR_PAIR(Config::COLOR_HUD));
     }
     else if (state == GAME_OVER)
     {
         int centerX = width / 2;
         int centerY = height / 2;
 
-        attron(COLOR_PAIR(COLOR_GAME_OVER));
-        mvprintw(centerY - 3, centerX - 15, "╔═══════════════════════════════╗");
+        attron(COLOR_PAIR(Config::COLOR_GAME_OVER));
+        mvprintw(centerY - Config::GAMEOVER_BOX_VERTICAL_OFFSET, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╔═══════════════════════════════╗");
 
-        if (winner == 1)
+        if (winner == Config::WINNER_PLAYER1)
         {
-            mvprintw(centerY - 2, centerX - 15, "║        PLAYER WINS!           ║");
+            mvprintw(centerY - 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║        PLAYER WINS!           ║");
         }
-        else if (winner == 2)
+        else if (winner == Config::WINNER_PLAYER2)
         {
-            mvprintw(centerY - 2, centerX - 15, "║         BOT WINS!             ║");
+            mvprintw(centerY - 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║         BOT WINS!             ║");
         }
         else
         {
-            mvprintw(centerY - 2, centerX - 15, "║         TIE GAME!             ║");
+            mvprintw(centerY - 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║         TIE GAME!             ║");
         }
 
-        mvprintw(centerY - 1, centerX - 15, "╠═══════════════════════════════╣");
-        mvprintw(centerY, centerX - 15, "║ Time: %2ds   ║  Score: %3d     ║", getGameTime(), score);
-        mvprintw(centerY + 1, centerX - 15, "╠═══════════════════════════════╣");
-        attroff(COLOR_PAIR(COLOR_GAME_OVER));
+        mvprintw(centerY - 1, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╠═══════════════════════════════╣");
+        mvprintw(centerY, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║ Time: %2ds   ║  Score: %3d     ║", getGameTime(), score);
+        mvprintw(centerY + 1, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╠═══════════════════════════════╣");
+        attroff(COLOR_PAIR(Config::COLOR_GAME_OVER));
 
-        attron(COLOR_PAIR(COLOR_MESSAGES));
-        mvprintw(centerY + 2, centerX - 15, "║     R-Restart    Q-Quit       ║");
-        mvprintw(centerY + 3, centerX - 15, "╚═══════════════════════════════╝");
-        attroff(COLOR_PAIR(COLOR_MESSAGES));
+        attron(COLOR_PAIR(Config::COLOR_MESSAGES));
+        mvprintw(centerY + 2, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "║     R-Restart    Q-Quit       ║");
+        mvprintw(centerY + 3, centerX - Config::MENU_BOX_LARGE_HALF_WIDTH, "╚═══════════════════════════════╝");
+        attroff(COLOR_PAIR(Config::COLOR_MESSAGES));
     }
 
     refresh();
@@ -818,8 +816,8 @@ void Game::restartVsBot(Player &player, Bot &bot)
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
-    int side1 = rand() % 4;
-    int side2 = (side1 + 2) % 4;
+    int side1 = rand() % Config::NUM_SIDES;
+    int side2 = (side1 + 2) % Config::NUM_SIDES;
 
     auto p_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
     auto b_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
@@ -834,5 +832,5 @@ void Game::restartVsBot(Player &player, Bot &bot)
     bot.reset(b_pos.first, b_pos.second);
     bot.getPlayer()->setDirection(safeDir2);
 
-    winner = 0;
+    winner = Config::WINNER_TIE;
 }

@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "types.h"
+#include "config.h"
 #include <vector>
 
 class Bot
@@ -15,7 +16,7 @@ private:
   bool isPositionSafe(int x, int y, const Player &opponent, int width, int height);
 
 public:
-  Bot(int startX, int startY, int difficultyLevel = 1, Direction startDirection = RIGHT);
+  Bot(int startX, int startY, int difficultyLevel = Config::DEFAULT_BOT_DIFFICULTY, Direction startDirection = RIGHT);
   ~Bot();
 
   void update(const Player &opponent, int width, int height);

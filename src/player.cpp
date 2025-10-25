@@ -173,8 +173,8 @@ void Player::draw()
     {
         const auto &segment = trail[i];
 
-        int headColor = (playerId == 1) ? COLOR_PLAYER_HEAD : COLOR_PLAYER2_HEAD;
-        int trailColor = (playerId == 1) ? COLOR_PLAYER_TRAIL : COLOR_PLAYER2_TRAIL;
+        int headColor = (playerId == Config::PLAYER_1_ID) ? Config::COLOR_PLAYER_HEAD : Config::COLOR_PLAYER2_HEAD;
+        int trailColor = (playerId == Config::PLAYER_1_ID) ? Config::COLOR_PLAYER_TRAIL : Config::COLOR_PLAYER2_TRAIL;
 
         if (segment.isHead)
         {

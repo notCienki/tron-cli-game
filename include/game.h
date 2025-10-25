@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "bot.h"
+#include "config.h"
 #include <ncurses.h>
 #include <chrono>
 #include <locale.h>
@@ -24,15 +25,6 @@ private:
   std::chrono::steady_clock::time_point gameStartTime;
   std::chrono::steady_clock::time_point currentTime;
   int score;
-
-  static const int COLOR_PLAYER_HEAD = 1;
-  static const int COLOR_PLAYER_TRAIL = 2;
-  static const int COLOR_BORDERS = 3;
-  static const int COLOR_GAME_OVER = 4;
-  static const int COLOR_HUD = 5;
-  static const int COLOR_MESSAGES = 6;
-  static const int COLOR_PLAYER2_HEAD = 9;
-  static const int COLOR_PLAYER2_TRAIL = 10;
 
   void initColors();
   std::pair<int, int> getRandomSpawnPosition(int width, int height);

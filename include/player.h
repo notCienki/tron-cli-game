@@ -3,6 +3,7 @@
 #include <vector>
 #include <utility>
 #include "types.h"
+#include "config.h"
 
 struct TrailSegment
 {
@@ -27,13 +28,8 @@ private:
   std::vector<TrailSegment> trail;
   int playerId;
 
-  static const int COLOR_PLAYER_HEAD = 1;
-  static const int COLOR_PLAYER_TRAIL = 2;
-  static const int COLOR_PLAYER2_HEAD = 9;
-  static const int COLOR_PLAYER2_TRAIL = 10;
-
 public:
-  Player(int startX, int startY, int id = 1, Direction startDirection = RIGHT);
+  Player(int startX, int startY, int id = Config::PLAYER_1_ID, Direction startDirection = RIGHT);
 
   void move();
   void setDirection(Direction newDir);

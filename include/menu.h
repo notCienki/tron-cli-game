@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "types.h"
+#include "config.h"
 
 class Menu
 {
@@ -20,11 +21,6 @@ private:
   GameDifficulty currentDifficulty;
   int currentColorScheme;
   GameMode currentGameMode;
-
-  static const int COLOR_MENU_BORDER = 11;
-  static const int COLOR_MENU_TEXT = 12;
-  static const int COLOR_MENU_SELECTED = 13;
-  static const int COLOR_MENU_TITLE = 14;
 
 public:
   Menu();
