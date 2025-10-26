@@ -194,7 +194,7 @@ void Game::handleInput(Player &player)
     case 'R':
         if (state == GAME_OVER)
         {
-            restart(player);
+            restart(&player);
         }
         break;
     case 'q':
@@ -280,24 +280,61 @@ bool Game::checkWallCollision(int x, int y)
     return (x <= 0 || x >= width - 1 || y <= 0 || y >= height - 1);
 }
 
-void Game::gameOver()
+void Game::gameOver(int winnerPlayer)
 {
+    winner = winnerPlayer;
     state = GAME_OVER;
 }
 
-void Game::restart(Player &player)
+void Game::restart(Player *player1, Player *player2, Bot *bot)
 {
     int actualWidth, actualHeight;
     getmaxyx(stdscr, actualHeight, actualWidth);
 
-    int randomSide = rand() % Config::NUM_SIDES;
-    auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
-    Direction safeDir = getSafeDirection(randomSide);
-
     startGame();
+    winner = Config::WINNER_TIE;
 
-    player.reset(spawnPos.first, spawnPos.second);
-    player.setDirection(safeDir);
+    if (currentGameMode == SINGLE_PLAYER && player1)
+    {
+        int randomSide = rand() % Config::NUM_SIDES;
+        auto spawnPos = getRandomPositionOnSide(randomSide, actualWidth, actualHeight);
+        Direction safeDir = getSafeDirection(randomSide);
+
+        player1->reset(spawnPos.first, spawnPos.second);
+        player1->setDirection(safeDir);
+    }
+    else if (currentGameMode == TWO_PLAYER && player1 && player2)
+    {
+        int side1 = rand() % Config::NUM_SIDES;
+        int side2 = (side1 + 2) % Config::NUM_SIDES;
+
+        auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
+        auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
+
+        Direction safeDir1 = getSafeDirection(side1);
+        Direction safeDir2 = getSafeDirection(side2);
+
+        player1->reset(p1_pos.first, p1_pos.second);
+        player1->setDirection(safeDir1);
+        player2->reset(p2_pos.first, p2_pos.second);
+        player2->setDirection(safeDir2);
+    }
+    else if (currentGameMode == VS_BOT && player1 && bot)
+    {
+        int side1 = rand() % Config::NUM_SIDES;
+        int side2 = (side1 + 2) % Config::NUM_SIDES;
+
+        auto p_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
+        auto b_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
+
+        Direction safeDir1 = getSafeDirection(side1);
+        Direction safeDir2 = getSafeDirection(side2);
+
+        player1->reset(p_pos.first, p_pos.second);
+        player1->setDirection(safeDir1);
+        bot->reset(b_pos.first, b_pos.second);
+        bot->getPlayer()->setDirection(safeDir2);
+    }
 }
 
 bool Game::checkTrailCollision(int x, int y, const Player &player)
@@ -536,7 +573,7 @@ void Game::handleInputTwoPlayer(Player &player1, Player &player2)
     case 'R':
         if (state == GAME_OVER)
         {
-            restartTwoPlayer(player1, player2);
+            restart(&player1, &player2);
         }
         break;
     case 'q':
@@ -575,19 +612,19 @@ void Game::updateTwoPlayer(Player &player1, Player &player2)
 
     if (headToHead)
     {
-        gameOverTwoPlayer(Config::WINNER_TIE);
+        gameOver(Config::WINNER_TIE);
     }
     else if (p1_loses && p2_loses)
     {
-        gameOverTwoPlayer(Config::WINNER_TIE);
+        gameOver(Config::WINNER_TIE);
     }
     else if (p1_loses)
     {
-        gameOverTwoPlayer(Config::WINNER_PLAYER2);
+        gameOver(Config::WINNER_PLAYER2);
     }
     else if (p2_loses)
     {
-        gameOverTwoPlayer(Config::WINNER_PLAYER1);
+        gameOver(Config::WINNER_PLAYER1);
     }
     else
     {
@@ -647,36 +684,6 @@ void Game::renderTwoPlayer(Player &player1, Player &player2)
     refresh();
 }
 
-void Game::gameOverTwoPlayer(int winnerPlayer)
-{
-    winner = winnerPlayer;
-    state = GAME_OVER;
-}
-
-void Game::restartTwoPlayer(Player &player1, Player &player2)
-{
-    int actualWidth, actualHeight;
-    getmaxyx(stdscr, actualHeight, actualWidth);
-
-    int side1 = rand() % Config::NUM_SIDES;
-    int side2 = (side1 + 2) % Config::NUM_SIDES;
-
-    auto p1_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
-    auto p2_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
-
-    Direction safeDir1 = getSafeDirection(side1);
-    Direction safeDir2 = getSafeDirection(side2);
-
-    startGame();
-
-    player1.reset(p1_pos.first, p1_pos.second);
-    player1.setDirection(safeDir1);
-    player2.reset(p2_pos.first, p2_pos.second);
-    player2.setDirection(safeDir2);
-
-    winner = Config::WINNER_TIE;
-}
-
 void Game::handleInputVsBot(Player &player, Bot &bot)
 {
     int ch = getch();
@@ -702,7 +709,7 @@ void Game::handleInputVsBot(Player &player, Bot &bot)
     case 'R':
         if (state == GAME_OVER)
         {
-            restartVsBot(player, bot);
+            restart(&player, nullptr, &bot);
         }
         break;
     case 'q':
@@ -743,15 +750,15 @@ void Game::updateVsBot(Player &player, Bot &bot)
 
     if (headToHead || (p_loses && b_loses))
     {
-        gameOverTwoPlayer(Config::WINNER_TIE);
+        gameOver(Config::WINNER_TIE);
     }
     else if (p_loses)
     {
-        gameOverTwoPlayer(Config::WINNER_PLAYER2);
+        gameOver(Config::WINNER_PLAYER2);
     }
     else if (b_loses)
     {
-        gameOverTwoPlayer(Config::WINNER_PLAYER1);
+        gameOver(Config::WINNER_PLAYER1);
     }
     else
     {
@@ -809,28 +816,4 @@ void Game::renderVsBot(Player &player, Bot &bot)
     }
 
     refresh();
-}
-
-void Game::restartVsBot(Player &player, Bot &bot)
-{
-    int actualWidth, actualHeight;
-    getmaxyx(stdscr, actualHeight, actualWidth);
-
-    int side1 = rand() % Config::NUM_SIDES;
-    int side2 = (side1 + 2) % Config::NUM_SIDES;
-
-    auto p_pos = getRandomPositionOnSide(side1, actualWidth, actualHeight);
-    auto b_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
-
-    Direction safeDir1 = getSafeDirection(side1);
-    Direction safeDir2 = getSafeDirection(side2);
-
-    startGame();
-
-    player.reset(p_pos.first, p_pos.second);
-    player.setDirection(safeDir1);
-    bot.reset(b_pos.first, b_pos.second);
-    bot.getPlayer()->setDirection(safeDir2);
-
-    winner = Config::WINNER_TIE;
 }

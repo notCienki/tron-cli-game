@@ -48,17 +48,14 @@ public:
   void handleInputVsBot(Player &player, Bot &bot);
   void updateVsBot(Player &player, Bot &bot);
   void renderVsBot(Player &player, Bot &bot);
-  void restartVsBot(Player &player, Bot &bot);
   void cleanup();
 
   bool checkWallCollision(int x, int y);
   bool checkTrailCollision(int x, int y, const Player &player);
 
-  void gameOver();
-  void restart(Player &player);
+  void gameOver(int winner = Config::WINNER_TIE);
+  void restart(Player *player1, Player *player2 = nullptr, Bot *bot = nullptr);
   void startGame();
-  void gameOverTwoPlayer(int winner);
-  void restartTwoPlayer(Player &player1, Player &player2);
   int winner;
 
   void showWelcomeMessage();
