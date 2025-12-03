@@ -62,19 +62,3 @@ tron
 make clean      # Remove build files
 make help       # Show all available commands
 ```
-## Controls
-
-- **↑↓←→** - Move your light cycle
-- **Q/ESC** - Quit game  
-- **R** - Restart after game over
-
-## Structure
-
-```
-tron-cli/
-├── include/     # Header files (game.h, player.h, bot.h, menu.h, types.h)
-├── src/         # Source files (.cpp)
-├── Makefile     # Build configuration
-├── LICENSE      # MIT License
-└── README.md    # This file
-```
