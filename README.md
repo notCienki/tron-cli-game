@@ -2,7 +2,7 @@
 
 A terminal-based Tron light cycle game built with C++ and ncurses.
 
-This project was born out of pure boredom during university lectures. Instead of scrolling through social media, I decided to build something fun while practicing my C++ skills.
+This project was born out of pure boredom during university lectures. I decided to build something fun while practicing my C++ skills.
 
 Classic Tron gameplay: control your light cycle, avoid crashing into walls and trails, make your opponents crash first.
 
