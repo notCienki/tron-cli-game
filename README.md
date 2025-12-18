@@ -1,14 +1,12 @@
-# Tron CLI Game
+# Tron CLI
 
-A terminal-based Tron light cycle game built with C++ and ncurses.
+![Gameplay Demo](demo.gif)
 
-This project was born out of pure boredom during university lectures. I decided to build something fun while practicing my C++ skills.
+Terminal-based Tron light cycle game with intelligent bot opponent.
 
-Classic Tron gameplay: control your light cycle, avoid crashing into walls and trails, make your opponents crash first.
+Built with C++ and ncurses. Born from university lecture boredom.
 
-## Quick Start
-
-### Prerequisites
+## Prerequisites
 
 **macOS:**
 ```bash
@@ -20,7 +18,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 ```
 
-**Linux :**
+**Linux:**
 ```bash
 # Install ncurses development package
 sudo apt-get install libncurses5-dev libncurses-dev
@@ -30,14 +28,14 @@ sudo apt-get install locales
 sudo locale-gen en_US.UTF-8
 ```
 
-### Build & Run
+## Build & Run
 
 ```bash
 # Clone the repository
-git clone https://github.com/notCienki/tron-cli-game
-cd tron-cli-game
+git clone https://github.com/notCienki/tron-cli
+cd tron-cli
 
-# Build and run using Makefile
+# Build and run
 make
 ./tron
 
@@ -62,3 +60,15 @@ tron
 make clean      # Remove build files
 make help       # Show all available commands
 ```
+
+## Bot Features
+
+Bot uses hybrid decision-making algorithm:
+- Flood-fill space analysis
+- Multi-criteria evaluation
+- 10-step look-ahead simulation
+- Trap detection and avoidance
+
+## License
+
+MIT
