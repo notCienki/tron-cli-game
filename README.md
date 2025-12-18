@@ -1,4 +1,4 @@
-# Tron CLI
+<h1 align="center">Tron CLI</h1>
 
 ![Gameplay Demo](demo.gif)
 
