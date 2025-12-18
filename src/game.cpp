@@ -150,7 +150,7 @@ void Game::run()
         {
             auto bot_pos = getRandomPositionOnSide(side2, actualWidth, actualHeight);
             Direction safeDir2 = getSafeDirection(side2);
-            gameBot = new Bot(bot_pos.first, bot_pos.second, Config::DEFAULT_BOT_DIFFICULTY, safeDir2);
+            gameBot = new Bot(bot_pos.first, bot_pos.second, safeDir2);
             gameBot->getPlayer()->initializeTrail();
         }
 

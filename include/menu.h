@@ -18,7 +18,6 @@ private:
   std::vector<std::string> settingsOptions;
 
   GameSpeed currentGameSpeed;
-  GameDifficulty currentDifficulty;
   int currentColorScheme;
   GameMode currentGameMode;
 
@@ -35,7 +34,6 @@ public:
   int getSelectedOption() const { return selectedOption; }
 
   GameSpeed getGameSpeed() const { return currentGameSpeed; }
-  GameDifficulty getDifficulty() const { return currentDifficulty; }
   int getColorScheme() const { return currentColorScheme; }
   GameMode getGameMode() const { return currentGameMode; }
 
@@ -43,7 +41,6 @@ public:
   void showGameModeMenu();
   void showSettingsMenu();
   void showGameSpeedMenu();
-  void showDifficultyMenu();
   void showColorSchemeMenu();
 
   bool shouldStartGame() const;

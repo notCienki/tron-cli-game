@@ -14,13 +14,6 @@ enum GameMode
   VS_BOT = 2
 };
 
-enum GameDifficulty
-{
-  EASY = 0,
-  MEDIUM = 1,
-  HARD = 2
-};
-
 enum GameSpeed
 {
   SLOW = 150000,
@@ -50,7 +43,6 @@ enum MenuState
   GAME_MODE_MENU,
   SETTINGS_MENU,
   GAME_SPEED_MENU,
-  DIFFICULTY_MENU,
   COLOR_SCHEME_MENU,
   IN_GAME
 };

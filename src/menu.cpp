@@ -1,6 +1,6 @@
 #include "../include/menu.h"
 
-Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORMAL), currentDifficulty(MEDIUM), currentColorScheme(0), currentGameMode(SINGLE_PLAYER)
+Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORMAL), currentColorScheme(0), currentGameMode(SINGLE_PLAYER)
 {
   mainMenuOptions = {
       "Start Game",
@@ -14,7 +14,6 @@ Menu::Menu() : currentState(MAIN_MENU), selectedOption(0), currentGameSpeed(NORM
       "Back"};
   settingsOptions = {
       "Game Speed",
-      "Difficulty",
       "Colors",
       "Back"};
 }
@@ -64,9 +63,6 @@ void Menu::render()
     break;
   case GAME_SPEED_MENU:
     showGameSpeedMenu();
-    break;
-  case DIFFICULTY_MENU:
-    showDifficultyMenu();
     break;
   case COLOR_SCHEME_MENU:
     showColorSchemeMenu();
@@ -226,15 +222,10 @@ bool Menu::handleInput()
       }
       else if (selectedOption == 1)
       {
-        currentState = DIFFICULTY_MENU;
-        resetSelection();
-      }
-      else if (selectedOption == 2)
-      {
         currentState = COLOR_SCHEME_MENU;
         resetSelection();
       }
-      else if (selectedOption == 3)
+      else if (selectedOption == 2)
       {
         currentState = MAIN_MENU;
         selectedOption = 2;
@@ -266,44 +257,18 @@ bool Menu::handleInput()
         selectedOption = 0;
       }
     }
-    else if (currentState == DIFFICULTY_MENU)
-    {
-      if (selectedOption == 0)
-      {
-        currentDifficulty = EASY;
-        currentState = SETTINGS_MENU;
-        selectedOption = 1;
-      }
-      else if (selectedOption == 1)
-      {
-        currentDifficulty = MEDIUM;
-        currentState = SETTINGS_MENU;
-        selectedOption = 1;
-      }
-      else if (selectedOption == 2)
-      {
-        currentDifficulty = HARD;
-        currentState = SETTINGS_MENU;
-        selectedOption = 1;
-      }
-      else if (selectedOption == 3)
-      {
-        currentState = SETTINGS_MENU;
-        selectedOption = 1;
-      }
-    }
     else if (currentState == COLOR_SCHEME_MENU)
     {
       if (selectedOption >= 0 && selectedOption < 3)
       {
         currentColorScheme = selectedOption;
         currentState = SETTINGS_MENU;
-        selectedOption = 2;
+        selectedOption = 1;
       }
       else if (selectedOption == 3)
       {
         currentState = SETTINGS_MENU;
-        selectedOption = 2;
+        selectedOption = 1;
       }
     }
 
@@ -433,37 +398,26 @@ void Menu::showSettingsMenu()
   if (selectedOption == 1)
   {
     attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Difficulty         ║");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Colors             ║");
     attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Difficulty         ║");
+    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Colors             ║");
   }
 
   if (selectedOption == 2)
   {
     attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Colors             ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
     attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
   }
   else
   {
-    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Colors             ║");
+    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
   }
 
-  if (selectedOption == 3)
-  {
-    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
-    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-  }
-  else
-  {
-    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
-  }
-
-  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
+  mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
   attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
 }
 
@@ -514,69 +468,6 @@ void Menu::showGameSpeedMenu()
   else
   {
     mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Fast               ║");
-  }
-
-  if (selectedOption == 3)
-  {
-    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Back               ║");
-    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-  }
-  else
-  {
-    mvprintw(centerY + 2, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Back               ║");
-  }
-  mvprintw(centerY + 3, centerX - Config::MENU_BOX_HALF_WIDTH, "╚══════════════════════╝");
-  attroff(COLOR_PAIR(Config::COLOR_MENU_TEXT));
-}
-
-void Menu::showDifficultyMenu()
-{
-  int termHeight, termWidth;
-  getmaxyx(stdscr, termHeight, termWidth);
-
-  int centerX = termWidth / 2;
-  int centerY = termHeight / 2;
-
-  attron(COLOR_PAIR(Config::COLOR_MENU_TITLE));
-  mvprintw(centerY - 4, centerX - Config::MENU_BOX_HALF_WIDTH, "╔══════════════════════╗");
-  mvprintw(centerY - 3, centerX - Config::MENU_BOX_HALF_WIDTH, "║     DIFFICULTY       ║");
-  mvprintw(centerY - 2, centerX - Config::MENU_BOX_HALF_WIDTH, "╠══════════════════════╣");
-  attroff(COLOR_PAIR(Config::COLOR_MENU_TITLE));
-
-  attron(COLOR_PAIR(Config::COLOR_MENU_TEXT));
-
-  if (selectedOption == 0)
-  {
-    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Easy               ║");
-    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-  }
-  else
-  {
-    mvprintw(centerY - 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Easy               ║");
-  }
-
-  if (selectedOption == 1)
-  {
-    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Medium             ║");
-    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-  }
-  else
-  {
-    mvprintw(centerY, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Medium             ║");
-  }
-
-  if (selectedOption == 2)
-  {
-    attron(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║ > Hard               ║");
-    attroff(COLOR_PAIR(Config::COLOR_MENU_SELECTED));
-  }
-  else
-  {
-    mvprintw(centerY + 1, centerX - Config::MENU_BOX_HALF_WIDTH, "║   Hard               ║");
   }
 
   if (selectedOption == 3)
